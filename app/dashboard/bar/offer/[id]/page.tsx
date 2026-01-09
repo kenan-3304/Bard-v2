@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -31,7 +30,46 @@ export default function OfferDetails() {
     const [counterMode, setCounterMode] = useState(false)
     const [counterNotes, setCounterNotes] = useState('')
 
-    // ... (keep fetchOffer)
+    async function fetchOffer() {
+        const { data } = await supabase
+            .from('offers')
+            .select(`
+            *,
+            campaigns (
+                title,
+                description,
+                start_date,
+                end_date,
+                brands ( name )
+            )
+        `)
+            .eq('id', id)
+            .single()
+
+        if (data) setOffer(data)
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        fetchOffer()
+    }, [id])
+
+    const handleAccept = async () => {
+        // Confirmation is now handled by UI
+
+        const { error } = await supabase
+            .from('offers')
+            .update({ status: 'accepted' })
+            .eq('id', id)
+
+        if (error) alert('Error: ' + error.message)
+        else {
+            alert('Offer accepted!')
+            fetchOffer()
+            router.refresh()
+            router.push('/dashboard/bar')
+        }
+    }
 
     const handleCounter = async () => {
         if (!counterPrice) return
@@ -54,16 +92,36 @@ export default function OfferDetails() {
         }
     }
 
-    // ... (keep other parts)
+    if (loading) return <div className="p-8">Loading...</div>
+    if (!offer) return <div className="p-8">Offer not found</div>
 
     return (
         <div className="p-8 max-w-3xl mx-auto">
-            {/* ... (keep header parts) */}
-
+            <Button variant="ghost" className="mb-4 pl-0" onClick={() => router.push('/dashboard/bar')}>
+                &larr; Back to Dashboard
+            </Button>
             <Card>
-                {/* ... (keep card header) */}
+                <CardHeader>
+                    <div className="flex justify-between">
+                        <div>
+                            <CardDescription className="uppercase tracking-widest text-xs font-bold mb-2">Offer from {offer.campaigns.brands.name}</CardDescription>
+                            <CardTitle className="text-3xl">{offer.campaigns.title}</CardTitle>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-2xl font-bold">${offer.price}</div>
+                            <div className="text-sm text-gray-500 uppercase">{offer.status}</div>
+                        </div>
+                    </div>
+                </CardHeader>
                 <CardContent className="space-y-6">
-                    {/* ... (keep campaign details) */}
+                    <div>
+                        <h3 className="font-semibold mb-2">Campaign Details</h3>
+                        <p className="text-gray-600">{offer.campaigns.description}</p>
+                        <div className="mt-4 flex gap-4 text-sm text-gray-500">
+                            <div>Start: {new Date(offer.campaigns.start_date).toLocaleDateString()}</div>
+                            <div>End: {new Date(offer.campaigns.end_date).toLocaleDateString()}</div>
+                        </div>
+                    </div>
 
                     <div className="pt-6 border-t flex gap-4">
                         {offer.status === 'sent' && !counterMode && (
@@ -90,7 +148,17 @@ export default function OfferDetails() {
                                 <Button variant="outline" className="flex-1" onClick={() => setCounterMode(true)}>Counter Offer</Button>
                             </>
                         )}
-                        {/* ... (keep other status checks) */}
+                        {offer.status === 'accepted' && (
+                            <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => router.push(`/dashboard/bar/offer/${id}/proof`)}>
+                                Upload Proof of Activation
+                            </Button>
+                        )}
+                        {offer.status === 'completed' && (
+                            <div className="w-full text-center p-4 bg-green-50 text-green-800 rounded-lg border border-green-200">
+                                <p className="font-semibold">Activation Complete!</p>
+                                <p className="text-sm">Proof uploaded. Payment processing.</p>
+                            </div>
+                        )}
                     </div>
 
                     {counterMode && (
