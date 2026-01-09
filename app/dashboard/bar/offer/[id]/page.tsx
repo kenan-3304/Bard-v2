@@ -19,26 +19,27 @@ export default function OfferDetails() {
     const [counterNotes, setCounterNotes] = useState('')
     const [aiProcessing, setAiProcessing] = useState(false)
 
-    useEffect(() => {
-        async function fetchOffer() {
-            const { data } = await supabase
-                .from('offers')
-                .select(`
-                *,
-                campaigns (
-                    title,
-                    description,
-                    start_date,
-                    end_date,
-                    brands ( name )
-                )
-            `)
-                .eq('id', id)
-                .single()
+    async function fetchOffer() {
+        const { data } = await supabase
+            .from('offers')
+            .select(`
+            *,
+            campaigns (
+                title,
+                description,
+                start_date,
+                end_date,
+                brands ( name )
+            )
+        `)
+            .eq('id', id)
+            .single()
 
-            if (data) setOffer(data)
-            setLoading(false)
-        }
+        if (data) setOffer(data)
+        setLoading(false)
+    }
+
+    useEffect(() => {
         fetchOffer()
     }, [id])
 
@@ -53,6 +54,7 @@ export default function OfferDetails() {
         if (error) alert('Error: ' + error.message)
         else {
             alert('Offer accepted!')
+            fetchOffer()
             router.refresh()
             router.push('/dashboard/bar')
         }
@@ -78,6 +80,7 @@ export default function OfferDetails() {
         if (error) alert('Error: ' + error.message)
         else {
             alert('Counter-offer sent!')
+            fetchOffer()
             router.refresh()
             router.push('/dashboard/bar')
         }

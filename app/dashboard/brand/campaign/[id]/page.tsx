@@ -15,32 +15,33 @@ export default function CampaignDetails() {
     const [campaign, setCampaign] = useState<any>(null)
     const [offers, setOffers] = useState<any[]>([])
 
+    async function fetchData() {
+        // Fetch Campaign
+        const { data: campaignData, error: campError } = await supabase
+            .from('campaigns')
+            .select('*')
+            .eq('id', id)
+            .single()
+
+        if (campError) console.error(campError)
+        setCampaign(campaignData)
+
+        // Fetch Offers for this campaign
+        const { data: offersData, error: offError } = await supabase
+            .from('offers')
+            .select(`
+            *,
+            bars ( name, location )
+        `)
+            .eq('campaign_id', id)
+            .order('created_at', { ascending: false })
+
+        if (offError) console.error(offError)
+        setOffers(offersData || [])
+        setLoading(false)
+    }
+
     useEffect(() => {
-        async function fetchData() {
-            // Fetch Campaign
-            const { data: campaignData, error: campError } = await supabase
-                .from('campaigns')
-                .select('*')
-                .eq('id', id)
-                .single()
-
-            if (campError) console.error(campError)
-            setCampaign(campaignData)
-
-            // Fetch Offers for this campaign
-            const { data: offersData, error: offError } = await supabase
-                .from('offers')
-                .select(`
-                *,
-                bars ( name, location )
-            `)
-                .eq('campaign_id', id)
-                .order('created_at', { ascending: false })
-
-            if (offError) console.error(offError)
-            setOffers(offersData || [])
-            setLoading(false)
-        }
         fetchData()
     }, [id])
 
@@ -55,8 +56,7 @@ export default function CampaignDetails() {
         if (error) alert('Error: ' + error.message)
         else {
             alert('Counter offer accepted!')
-            // Refresh local state
-            setOffers(prev => prev.map(o => o.id === offerId ? { ...o, status: 'accepted' } : o))
+            fetchData()
         }
     }
 
