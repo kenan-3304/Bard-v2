@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -10,6 +10,7 @@ import { Download, Share2, Award, Users, DollarSign } from 'lucide-react'
 
 export default function CampaignReport() {
     const { id } = useParams()
+    const router = useRouter()
     const supabase = createClient()
     const [loading, setLoading] = useState(true)
     const [offer, setOffer] = useState<any>(null)

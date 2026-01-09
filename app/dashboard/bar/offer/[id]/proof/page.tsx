@@ -25,8 +25,15 @@ export default function UploadProofPage() {
     const router = useRouter()
     const supabase = createClient()
     const [errorMsg, setErrorMsg] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [file, setFile] = useState<File | null>(null)
+    const [attendance, setAttendance] = useState('')
 
-    // ... handleFileChange ...
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setFile(e.target.files[0])
+        }
+    }
 
     const executeUpload = async () => {
         if (!file || !attendance) {
