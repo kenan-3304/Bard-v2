@@ -8,6 +8,17 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function UploadProofPage() {
     const { id } = useParams()
@@ -23,8 +34,8 @@ export default function UploadProofPage() {
         }
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+    // Function to handle the actual upload logic
+    const executeUpload = async () => {
         if (!file || !attendance) {
             alert('Please select a photo and enter attendance.')
             return
@@ -43,10 +54,7 @@ export default function UploadProofPage() {
 
             if (uploadError) throw uploadError
 
-            // 2. Get Public URL (Optional, depending on bucket setting, but path is enough usually)
-            // const { data: { publicUrl } } = supabase.storage.from('proofs').getPublicUrl(filePath)
-
-            // 3. Update Offer
+            // 2. Update Offer
             const { error: updateError } = await supabase
                 .from('offers')
                 .update({
@@ -77,7 +85,7 @@ export default function UploadProofPage() {
                     <CardDescription>Upload a photo of the branding in action and estimated reach.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-6">
                         <div className="space-y-2">
                             <Label>Proof of Activation Photo</Label>
                             <Input type="file" accept="image/*" onChange={handleFileChange} required />
@@ -95,10 +103,28 @@ export default function UploadProofPage() {
                             />
                         </div>
 
-                        <Button type="submit" className="w-full" disabled={loading}>
-                            {loading ? 'Uploading...' : 'Submit & Complete'}
-                        </Button>
-                    </form>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button className="w-full" disabled={loading || !file || !attendance}>
+                                    {loading ? 'Uploading...' : 'Submit & Complete'}
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Confirm Activation Completion</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Are you sure you want to submit this proof? This will mark the offer as completed and notify the brand.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={executeUpload}>
+                                        Confirm & Submit
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
                 </CardContent>
             </Card>
         </div>
