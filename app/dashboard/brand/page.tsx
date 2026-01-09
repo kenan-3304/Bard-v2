@@ -39,31 +39,54 @@ export default async function BrandDashboard() {
                 </Button>
             </div>
 
-            <div className="grid gap-4">
-                {campaigns?.map((campaign: any) => (
-                    <Card key={campaign.id} className="hover:shadow-md transition-shadow border-slate-200">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-xl font-bold text-slate-900">
-                                {campaign.title}
-                            </CardTitle>
-                            <StatusBadge status={campaign.status} />
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-slate-500 mb-4">{campaign.description}</p>
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="font-medium text-slate-700">Budget: ${campaign.total_budget}</span>
-                                <Link href={`/dashboard/brand/campaign/${campaign.id}`} className="text-blue-600 hover:underline font-medium">
-                                    Manage Offers &rarr;
-                                </Link>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-                {campaigns?.length === 0 && (
-                    <div className="text-center py-12 text-gray-400">
-                        No campaigns yet. Create one to get started!
-                    </div>
-                )}
+            <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th className="px-6 py-4 font-semibold text-slate-900 w-1/3">Campaign</th>
+                                <th className="px-6 py-4 font-semibold text-slate-900">Status</th>
+                                <th className="px-6 py-4 font-semibold text-slate-900">Budget</th>
+                                <th className="px-6 py-4 font-semibold text-slate-900 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {campaigns?.map((campaign: any) => (
+                                <tr key={campaign.id} className="group hover:bg-slate-50 transition-colors">
+                                    <td className="px-6 py-5">
+                                        <div className="font-semibold text-slate-900 text-base mb-1">{campaign.title}</div>
+                                        <div className="text-slate-500 line-clamp-1 max-w-sm">{campaign.description}</div>
+                                    </td>
+                                    <td className="px-6 py-5 align-top pt-6">
+                                        <StatusBadge status={campaign.status} />
+                                    </td>
+                                    <td className="px-6 py-5 align-top pt-6">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] uppercase tracking-wider font-bold text-slate-500 mb-1">Total Budget</span>
+                                            <span className="text-xl font-bold text-slate-900 font-mono tracking-tight">
+                                                ${campaign.total_budget?.toLocaleString()}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-5 text-right align-middle">
+                                        <Button asChild variant="outline" size="sm" className="font-medium text-slate-700 hover:text-slate-900 hover:border-slate-300">
+                                            <Link href={`/dashboard/brand/campaign/${campaign.id}`}>
+                                                Manage Offers
+                                            </Link>
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))}
+                            {campaigns?.length === 0 && (
+                                <tr>
+                                    <td colSpan={4} className="px-6 py-12 text-center text-slate-400">
+                                        No campaigns found. Create your first campaign to get started.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     )
