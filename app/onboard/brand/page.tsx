@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
@@ -25,6 +25,24 @@ export default function BrandOnboarding() {
 
     const router = useRouter()
     const supabase = createClient()
+
+    useEffect(() => {
+        const checkRole = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', user.id)
+                .single()
+
+            if (profile?.role) {
+                router.replace(`/dashboard/${profile.role}`)
+            }
+        }
+        checkRole()
+    }, [supabase, router])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()

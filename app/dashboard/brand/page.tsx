@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
+import { SignOutButton } from '@/components/sign-out-button'
 
 export default async function BrandDashboard() {
     const supabase = await createClient()
@@ -34,12 +35,15 @@ export default async function BrandDashboard() {
                     <h1 className="text-3xl font-bold">Brand Dashboard</h1>
                     <p className="text-muted-foreground">Manage your campaigns</p>
                 </div>
-                <Button asChild>
-                    <Link href="/dashboard/brand/new">
-                        <Plus className="w-4 h-4 mr-2" />
-                        New Campaign
-                    </Link>
-                </Button>
+                <div className="flex gap-4">
+                    <Button asChild>
+                        <Link href="/dashboard/brand/new">
+                            <Plus className="w-4 h-4 mr-2" />
+                            New Campaign
+                        </Link>
+                    </Button>
+                    <SignOutButton />
+                </div>
             </div>
 
             <div className="grid gap-4">

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import Link from 'next/link'
+import { SignOutButton } from '@/components/sign-out-button'
 
 export default async function BarDashboard() {
     const supabase = await createClient()
@@ -40,6 +41,7 @@ export default async function BarDashboard() {
                     <h1 className="text-3xl font-bold">Bar Dashboard</h1>
                     <p className="text-muted-foreground">Manage incoming offers</p>
                 </div>
+                <SignOutButton />
             </div>
 
             <div className="grid gap-4">

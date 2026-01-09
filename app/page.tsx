@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { Store, Beer } from 'lucide-react'
+import { SignOutButton } from '@/components/sign-out-button'
 
 export default async function Home() {
   const supabase = await createClient()
@@ -50,9 +51,10 @@ export default async function Home() {
               <CardTitle>Welcome back, {profile.role}!</CardTitle>
             </CardHeader>
             <CardContent>
-              <Button asChild className="w-full">
+              <Button asChild className="w-full mb-2">
                 <Link href="/dashboard/brand">Go to Brand Dashboard</Link>
               </Button>
+              <SignOutButton className="w-full" />
             </CardContent>
           </Card>
         </main>
@@ -65,9 +67,10 @@ export default async function Home() {
               <CardTitle>Welcome back, {profile.role}!</CardTitle>
             </CardHeader>
             <CardContent>
-              <Button asChild className="w-full">
+              <Button asChild className="w-full mb-2">
                 <Link href="/dashboard/bar">Go to Bar Dashboard</Link>
               </Button>
+              <SignOutButton className="w-full" />
             </CardContent>
           </Card>
         </main>
@@ -79,13 +82,7 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gray-50">
       <div className="absolute top-4 right-4">
-        <form action={async () => {
-          'use server'
-          const { signOut } = await import('@/app/auth/signout/action')
-          await signOut()
-        }}>
-          <Button variant="outline">Sign Out</Button>
-        </form>
+        <SignOutButton />
       </div>
       <div className="mb-12 text-center">
         <h1 className="text-3xl font-bold mb-2">Choose your path</h1>
