@@ -24,24 +24,18 @@ export default function UploadProofPage() {
     const { id } = useParams()
     const router = useRouter()
     const supabase = createClient()
-    const [loading, setLoading] = useState(false)
-    const [file, setFile] = useState<File | null>(null)
-    const [attendance, setAttendance] = useState('')
+    const [errorMsg, setErrorMsg] = useState('')
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            setFile(e.target.files[0])
-        }
-    }
+    // ... handleFileChange ...
 
-    // Function to handle the actual upload logic
     const executeUpload = async () => {
         if (!file || !attendance) {
-            alert('Please select a photo and enter attendance.')
+            setErrorMsg('Please select a photo and enter attendance.')
             return
         }
-
+        setErrorMsg('')
         setLoading(true)
+
         try {
             // 1. Upload Image
             const fileExt = file.name.split('.').pop()
@@ -66,13 +60,13 @@ export default function UploadProofPage() {
 
             if (updateError) throw updateError
 
-            alert('Activation completed successfully!')
-            router.push('/dashboard/bar')
+            // Success: clear state? No need, we redirect.
             router.refresh()
+            router.push('/dashboard/bar')
 
         } catch (error: any) {
-            alert('Error: ' + error.message)
-        } finally {
+            console.error(error)
+            setErrorMsg('Error: ' + error.message)
             setLoading(false)
         }
     }
@@ -86,6 +80,11 @@ export default function UploadProofPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-6">
+                        {errorMsg && (
+                            <div className="bg-red-50 text-red-600 p-3 rounded text-sm font-medium border border-red-200">
+                                {errorMsg}
+                            </div>
+                        )}
                         <div className="space-y-2">
                             <Label>Proof of Activation Photo</Label>
                             <Input type="file" accept="image/*" onChange={handleFileChange} required />
