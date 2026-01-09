@@ -108,7 +108,7 @@ export default function NewCampaign() {
     }
 
     return (
-        <div className="p-8 max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto py-8">
             <div className="mb-6">
                 <Button variant="ghost" asChild className="pl-0 hover:bg-transparent hover:text-primary">
                     <Link href="/dashboard/brand">
@@ -117,79 +117,127 @@ export default function NewCampaign() {
                     </Link>
                 </Button>
             </div>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Create New Campaign</CardTitle>
-                    <CardDescription>Launch a new campaign and send offers to bars.</CardDescription>
+
+            <Card className="border-slate-200 shadow-sm">
+                <CardHeader className="bg-slate-50 border-b border-slate-100 pb-6">
+                    <CardTitle className="text-xl font-bold text-slate-900">Create New Campaign</CardTitle>
+                    <CardDescription>Enter the details for your new activation campaign.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="space-y-2">
-                            <Label>Campaign Title</Label>
-                            <Input
-                                required
-                                placeholder="Summer Patio Promo"
-                                value={formData.title}
-                                onChange={e => setFormData({ ...formData, title: e.target.value })}
-                            />
+                <CardContent className="pt-8">
+                    <form onSubmit={handleSubmit} className="space-y-8">
+
+                        {/* Campaign Details Section */}
+                        <div className="space-y-6">
+                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider border-b pb-2">Campaign Details</h3>
+
+                            <div className="space-y-3">
+                                <Label htmlFor="title" className="text-slate-700">Campaign Title <span className="text-red-500">*</span></Label>
+                                <Input
+                                    id="title"
+                                    placeholder="e.g. Summer Ale Launch 2024"
+                                    value={formData.title}
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    required
+                                    className="max-w-md"
+                                />
+                            </div>
+
+                            <div className="space-y-3">
+                                <Label htmlFor="description" className="text-slate-700">Description</Label>
+                                <Textarea
+                                    id="description"
+                                    placeholder="Describe the campaign goals and requirements..."
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    rows={4}
+                                    className="max-w-xl"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6 max-w-lg">
+                                <div className="space-y-3">
+                                    <Label htmlFor="total_budget" className="text-slate-700">Total Budget ($)</Label>
+                                    <Input
+                                        id="total_budget"
+                                        type="number"
+                                        placeholder="5000"
+                                        value={formData.total_budget}
+                                        onChange={(e) => setFormData({ ...formData, total_budget: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-3">
+                                    <Label htmlFor="price_per_offer" className="text-slate-700">Offer Price ($) <span className="text-red-500">*</span></Label>
+                                    <Input
+                                        id="price_per_offer"
+                                        type="number"
+                                        placeholder="500"
+                                        value={formData.price_per_offer}
+                                        onChange={(e) => setFormData({ ...formData, price_per_offer: e.target.value })}
+                                        required
+                                    />
+                                    <p className="text-xs text-slate-500">Amount offered to each bar.</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6 max-w-lg">
+                                <div className="space-y-3">
+                                    <Label htmlFor="start_date" className="text-slate-700">Start Date</Label>
+                                    <Input
+                                        id="start_date"
+                                        type="date"
+                                        value={formData.start_date}
+                                        onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-3">
+                                    <Label htmlFor="end_date" className="text-slate-700">End Date</Label>
+                                    <Input
+                                        id="end_date"
+                                        type="date"
+                                        value={formData.end_date}
+                                        onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                                    />
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label>Description</Label>
-                            <Input
-                                placeholder="Descriptive details..."
-                                value={formData.description}
-                                onChange={e => setFormData({ ...formData, description: e.target.value })}
-                            />
-                        </div>
+                        {/* Bar Selection Section */}
+                        <div className="space-y-6 pt-4">
+                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider border-b pb-2">Select Bars</h3>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label>Start Date</Label>
-                                <Input type="date" required value={formData.start_date} onChange={e => setFormData({ ...formData, start_date: e.target.value })} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>End Date</Label>
-                                <Input type="date" required value={formData.end_date} onChange={e => setFormData({ ...formData, end_date: e.target.value })} />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label>Total Budget ($)</Label>
-                                <Input type="number" required placeholder="5000" value={formData.total_budget} onChange={e => setFormData({ ...formData, total_budget: e.target.value })} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Offer Price per Bar ($)</Label>
-                                <Input type="number" required placeholder="500" value={formData.price_per_offer} onChange={e => setFormData({ ...formData, price_per_offer: e.target.value })} />
-                            </div>
-                        </div>
-
-                        <div className="space-y-4 pt-4 border-t">
-                            <Label className="text-lg">Select Bars to Offer</Label>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-60 overflow-y-auto">
-                                {bars.map(bar => (
-                                    <div key={bar.id} className={`flex items-start space-x-3 p-3 rounded border cursor-pointer transition-colors ${selectedBars.includes(bar.id) ? 'bg-blue-50 border-blue-500' : 'hover:bg-gray-50'}`} onClick={() => handleBarToggle(bar.id)}>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedBars.includes(bar.id)}
-                                            readOnly
-                                            className="mt-1"
-                                        />
-                                        <div>
-                                            <div className="font-medium">{bar.name}</div>
-                                            <div className="text-xs text-gray-500">{bar.location}</div>
+                            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <div className="space-y-3">
+                                    {bars.map(bar => (
+                                        <div key={bar.id} className="flex items-center space-x-3 bg-white p-3 rounded border border-slate-100 shadow-sm hover:border-slate-300 transition-colors">
+                                            <Checkbox
+                                                id={bar.id}
+                                                checked={selectedBars.includes(bar.id)}
+                                                onCheckedChange={(checked) => {
+                                                    if (checked) setSelectedBars([...selectedBars, bar.id])
+                                                    else setSelectedBars(selectedBars.filter(id => id !== bar.id))
+                                                }}
+                                            />
+                                            <div className="grid gap-1.5 leading-none">
+                                                <label
+                                                    htmlFor={bar.id}
+                                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                                >
+                                                    {bar.name}
+                                                </label>
+                                                <p className="text-xs text-slate-500">{bar.location}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                                {bars.length === 0 && <p className="text-gray-500 italic">No bars found.</p>}
+                                    ))}
+                                    {bars.length === 0 && <p className="text-sm text-slate-500 italic">No bars available in the network.</p>}
+                                </div>
                             </div>
-                            <p className="text-sm text-muted-foreground">Selected: {selectedBars.length} bars</p>
                         </div>
 
-                        <Button type="submit" className="w-full" disabled={loading}>
-                            {loading ? 'Creating...' : 'Launch Campaign'}
-                        </Button>
+                        <div className="pt-4">
+                            <Button type="submit" disabled={loading} className="w-full md:w-auto bg-zinc-900 hover:bg-zinc-800 text-white min-w-[200px]">
+                                {loading ? 'Creating Campaign...' : 'Launch Campaign'}
+                            </Button>
+                        </div>
                     </form>
                 </CardContent>
             </Card>
