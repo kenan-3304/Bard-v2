@@ -64,11 +64,13 @@ export default async function DashboardLayout({
                         </Button>
                     )}
 
+                    {/* 
                     <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Settings</p>
                     <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-zinc-900 hover:bg-slate-200">
                         <Settings className="w-4 h-4 mr-2" />
                         Profile
-                    </Button>
+                    </Button> 
+                    */}
                 </nav>
 
                 <div className="p-4 border-t border-slate-200">
