@@ -45,6 +45,12 @@ export default async function DashboardLayout({
                                 Brand Dashboard
                             </Link>
                         </Button>
+                        <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-zinc-900 hover:bg-slate-200" asChild>
+                            <Link href="/dashboard/brand/bars">
+                                <FileText className="w-4 h-4 mr-2" />
+                                Partner Network
+                            </Link>
+                        </Button>
                     )}
 
                     {role === 'bar' && (
