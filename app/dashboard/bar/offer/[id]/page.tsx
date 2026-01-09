@@ -150,6 +150,17 @@ export default function OfferDetails() {
                                 <Button variant="outline" className="flex-1" onClick={() => setCounterMode(true)}>Counter Offer</Button>
                             </>
                         )}
+                        {offer.status === 'accepted' && (
+                            <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => router.push(`/dashboard/bar/offer/${id}/proof`)}>
+                                Upload Proof of Activation
+                            </Button>
+                        )}
+                        {offer.status === 'completed' && (
+                            <div className="w-full text-center p-4 bg-green-50 text-green-800 rounded-lg border border-green-200">
+                                <p className="font-semibold">Activation Complete!</p>
+                                <p className="text-sm">Proof uploaded. Payment processing.</p>
+                            </div>
+                        )}
                     </div>
 
                     {counterMode && (
