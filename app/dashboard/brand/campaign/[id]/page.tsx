@@ -3,6 +3,8 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { ChevronLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -89,11 +91,14 @@ export default function CampaignDetails() {
     return (
         <div className="p-8 max-w-5xl mx-auto">
             <div className="mb-8">
+                <Button variant="ghost" asChild className="mb-6 pl-0 hover:bg-transparent hover:text-primary">
+                    <Link href="/dashboard/brand">
+                        <ChevronLeft className="w-4 h-4 mr-2" />
+                        Back to Dashboard
+                    </Link>
+                </Button>
                 <div className="flex justify-between items-start">
                     <div>
-                        <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-blue-600" onClick={() => router.push('/dashboard/brand')}>
-                            &larr; Back to Dashboard
-                        </Button>
                         <h1 className="text-3xl font-bold mb-2">{campaign.title}</h1>
                         <p className="text-muted-foreground">{campaign.description}</p>
                         <div className="flex gap-4 mt-4 text-sm font-medium">

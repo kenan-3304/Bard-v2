@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { ChevronLeft } from 'lucide-react'
 
 interface Bar {
     id: string
@@ -107,6 +109,14 @@ export default function NewCampaign() {
 
     return (
         <div className="p-8 max-w-3xl mx-auto">
+            <div className="mb-6">
+                <Button variant="ghost" asChild className="pl-0 hover:bg-transparent hover:text-primary">
+                    <Link href="/dashboard/brand">
+                        <ChevronLeft className="w-4 h-4 mr-2" />
+                        Back to Dashboard
+                    </Link>
+                </Button>
+            </div>
             <Card>
                 <CardHeader>
                     <CardTitle>Create New Campaign</CardTitle>
