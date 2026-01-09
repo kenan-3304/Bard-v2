@@ -8,6 +8,17 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function OfferDetails() {
     const { id } = useParams()
@@ -44,7 +55,7 @@ export default function OfferDetails() {
     }, [id])
 
     const handleAccept = async () => {
-        if (!confirm('Are you sure you want to accept this offer?')) return
+        // Confirmation is now handled by UI
 
         const { error } = await supabase
             .from('offers')
@@ -117,7 +128,25 @@ export default function OfferDetails() {
                     <div className="pt-6 border-t flex gap-4">
                         {offer.status === 'sent' && !counterMode && (
                             <>
-                                <Button className="flex-1 bg-green-600 hover:bg-green-700" onClick={handleAccept}>Accept Offer</Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button className="flex-1 bg-green-600 hover:bg-green-700">Accept Offer</Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Accept Offer?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This will confirm your agreement to the campaign terms and budget of ${offer.price}.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleAccept} className="bg-green-600 hover:bg-green-700">
+                                                Confirm Acceptance
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                                 <Button variant="outline" className="flex-1" onClick={() => setCounterMode(true)}>Counter Offer</Button>
                             </>
                         )}

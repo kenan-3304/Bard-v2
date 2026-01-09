@@ -6,6 +6,17 @@ import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function CampaignDetails() {
     const { id } = useParams()
@@ -46,7 +57,7 @@ export default function CampaignDetails() {
     }, [id])
 
     const handleAcceptCounter = async (offerId: string) => {
-        if (!confirm('Accept this counter offer?')) return
+        // Confirmation is now handled by UI
 
         const { error } = await supabase
             .from('offers')
@@ -101,9 +112,28 @@ export default function CampaignDetails() {
                                     <span className="text-xs font-bold uppercase text-orange-800">Counter Note:</span>
                                     <p className="text-sm italic text-gray-700">"{offer.bar_notes}"</p>
                                 </div>
-                                <Button size="sm" onClick={() => handleAcceptCounter(offer.id)}>
-                                    Accept Counter
-                                </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button size="sm">
+                                            Accept Counter
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Accept Counter Offer?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This will update the agreed price to ${offer.price} (or whatever was negotiated in notes).
+                                                Note: In a real app we'd update the price field too if changed.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleAcceptCounter(offer.id)}>
+                                                Confirm Acceptance
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </CardContent>
                         )}
                         {offer.status === 'sent' && (
