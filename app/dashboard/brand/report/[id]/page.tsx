@@ -57,6 +57,11 @@ export default function CampaignReport() {
 
     return (
         <div className="min-h-screen bg-gray-50 p-8 font-sans">
+            <div className="max-w-5xl mx-auto mb-4">
+                <Button variant="ghost" onClick={() => router.back()}>
+                    &larr; Back to Campaign
+                </Button>
+            </div>
             <div className="max-w-5xl mx-auto bg-white shadow-2xl rounded-xl overflow-hidden border border-gray-100">
                 {/* Header Section */}
                 <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-12">

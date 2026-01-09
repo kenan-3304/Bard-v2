@@ -73,6 +73,9 @@ export default function UploadProofPage() {
 
     return (
         <div className="p-8 max-w-xl mx-auto">
+            <Button variant="ghost" className="mb-4 pl-0" onClick={() => router.back()}>
+                &larr; Back to Offer
+            </Button>
             <Card>
                 <CardHeader>
                     <CardTitle>Complete Activation</CardTitle>

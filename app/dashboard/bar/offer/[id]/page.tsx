@@ -102,6 +102,9 @@ export default function OfferDetails() {
 
     return (
         <div className="p-8 max-w-3xl mx-auto">
+            <Button variant="ghost" className="mb-4 pl-0" onClick={() => router.push('/dashboard/bar')}>
+                &larr; Back to Dashboard
+            </Button>
             <Card>
                 <CardHeader>
                     <div className="flex justify-between">

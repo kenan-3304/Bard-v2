@@ -77,6 +77,9 @@ export default function CampaignDetails() {
     return (
         <div className="p-8 max-w-5xl mx-auto">
             <div className="mb-8">
+                <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-blue-600" onClick={() => router.push('/dashboard/brand')}>
+                    &larr; Back to Dashboard
+                </Button>
                 <h1 className="text-3xl font-bold mb-2">{campaign.title}</h1>
                 <p className="text-muted-foreground">{campaign.description}</p>
                 <div className="flex gap-4 mt-4 text-sm font-medium">
@@ -134,6 +137,17 @@ export default function CampaignDetails() {
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
                                 </AlertDialog>
+                            </CardContent>
+                        )}
+                        {offer.status === 'completed' && (
+                            <CardContent className="py-4 border-t bg-green-50/50">
+                                <div className="mb-2">
+                                    <span className="text-xs font-bold uppercase text-green-800">Status: Activation Complete</span>
+                                    <p className="text-sm text-gray-700">Proof of activation has been uploaded.</p>
+                                </div>
+                                <Button className="w-full bg-indigo-600 hover:bg-indigo-700" onClick={() => router.push(`/dashboard/brand/report/${offer.id}`)}>
+                                    View Activation Report
+                                </Button>
                             </CardContent>
                         )}
                         {offer.status === 'sent' && (
