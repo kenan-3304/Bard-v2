@@ -14,8 +14,18 @@ export async function GET(request: Request) {
         if (!error) {
             return NextResponse.redirect(`${origin}${next}`)
         }
+        // Redirect with error details from exchangeCodeForSession
+        return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${error.name}&description=${error.message}`)
+    }
+
+    // Check for errors returned by the provider (e.g., access_denied)
+    const error = searchParams.get('error')
+    const error_description = searchParams.get('error_description')
+
+    if (error) {
+        return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${error}&description=${error_description}`)
     }
 
     // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+    return NextResponse.redirect(`${origin}/auth/auth-code-error?error=NoCode&description=No authorization code returned from provider`)
 }

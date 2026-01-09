@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase-server'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Store, Beer } from 'lucide-react'
+import { Store, Zap } from 'lucide-react'
 import { SignOutButton } from '@/components/sign-out-button'
 
 export default async function Home() {
@@ -80,35 +80,68 @@ export default async function Home() {
 
   // State 2: Authenticated without Role (Selection)
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gray-50">
-      <div className="absolute top-4 right-4">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-white md:bg-gray-50/50">
+      <div className="absolute top-6 right-6">
         <SignOutButton />
       </div>
-      <div className="mb-12 text-center">
-        <h1 className="text-3xl font-bold mb-2">Choose your path</h1>
-        <p className="text-muted-foreground">Tell us who you are to get started.</p>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
-        <Link href="/onboard/bar" className="group">
-          <Card className="h-full transition-all hover:border-black hover:shadow-lg cursor-pointer">
-            <CardHeader className="text-center">
-              <Store className="w-12 h-12 mx-auto mb-4 text-blue-600 group-hover:scale-110 transition-transform" />
-              <CardTitle>I own a Bar</CardTitle>
-              <CardDescription>Manage your venue, capacity, and peak nights.</CardDescription>
-            </CardHeader>
-          </Card>
-        </Link>
+      <div className="w-full max-w-5xl mx-auto space-y-12">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
+            Start your first activation
+          </h1>
+          <p className="text-xl text-gray-500 font-medium">
+            Choose how you participate in college nightlife deals.
+          </p>
+        </div>
 
-        <Link href="/onboard/brand" className="group">
-          <Card className="h-full transition-all hover:border-black hover:shadow-lg cursor-pointer">
-            <CardHeader className="text-center">
-              <Beer className="w-12 h-12 mx-auto mb-4 text-orange-600 group-hover:scale-110 transition-transform" />
-              <CardTitle>I represent a Brand</CardTitle>
-              <CardDescription>Showcase your products and connect with bars.</CardDescription>
-            </CardHeader>
-          </Card>
-        </Link>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+          {/* Bar Card */}
+          <Link href="/onboard/bar" className="group">
+            <div className="relative h-full bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl border border-gray-200 hover:border-blue-600 transition-all duration-300 transform hover:-translate-y-1">
+              <div className="flex flex-col h-full justify-between space-y-6">
+                <div>
+                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-colors duration-300">
+                    <Store className="w-6 h-6 text-blue-600 group-hover:text-white transition-colors" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">I run a Bar</h2>
+                  <p className="text-lg font-medium text-blue-600 mb-4">
+                    Receive brand offers. Host activations. Get paid.
+                  </p>
+                  <p className="text-sm text-gray-500 leading-relaxed">
+                    No fees. No cold pitches. Only vetted campaigns.
+                  </p>
+                </div>
+                <div className="pt-4 flex items-center text-sm font-semibold text-blue-600 group-hover:translate-x-1 transition-transform">
+                  Register Venue <span className="ml-2">→</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Brand Card */}
+          <Link href="/onboard/brand" className="group">
+            <div className="relative h-full bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl border border-gray-200 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-1">
+              <div className="flex flex-col h-full justify-between space-y-6">
+                <div>
+                  <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-amber-500 transition-colors duration-300">
+                    <Zap className="w-6 h-6 text-amber-600 group-hover:text-white transition-colors" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">I represent a Brand</h2>
+                  <p className="text-lg font-medium text-amber-600 mb-4">
+                    Launch activations. Reach students. Prove ROI.
+                  </p>
+                  <p className="text-sm text-gray-500 leading-relaxed">
+                    Target real college bars. Close faster. Get execution proof.
+                  </p>
+                </div>
+                <div className="pt-4 flex items-center text-sm font-semibold text-amber-600 group-hover:translate-x-1 transition-transform">
+                  Start Campaign <span className="ml-2">→</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
       </div>
     </main>
   )
