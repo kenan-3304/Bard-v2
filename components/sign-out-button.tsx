@@ -3,10 +3,15 @@
 import { Button } from '@/components/ui/button'
 import { signOut } from '@/app/auth/signout/action'
 
-export function SignOutButton({ className }: { className?: string }) {
+interface SignOutButtonProps {
+    className?: string
+    variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
+}
+
+export function SignOutButton({ className, variant = "outline" }: SignOutButtonProps) {
     return (
         <Button
-            variant="outline"
+            variant={variant}
             onClick={() => signOut()}
             className={className}
         >
