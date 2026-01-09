@@ -57,8 +57,7 @@ export default function CampaignDetails() {
     }, [id])
 
     const handleAcceptCounter = async (offerId: string) => {
-        // Confirmation is now handled by UI
-
+        // ... (existing logic)
         const { error } = await supabase
             .from('offers')
             .update({ status: 'accepted' })
@@ -71,20 +70,62 @@ export default function CampaignDetails() {
         }
     }
 
+    const handleCompleteCampaign = async () => {
+        const { error } = await supabase
+            .from('campaigns')
+            .update({ status: 'completed' })
+            .eq('id', id)
+
+        if (error) alert('Error: ' + error.message)
+        else {
+            alert('Campaign successfully completed!')
+            router.push('/dashboard/brand')
+        }
+    }
+
     if (loading) return <div className="p-8">Loading...</div>
     if (!campaign) return <div className="p-8">Campaign not found</div>
 
     return (
         <div className="p-8 max-w-5xl mx-auto">
             <div className="mb-8">
-                <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-blue-600" onClick={() => router.push('/dashboard/brand')}>
-                    &larr; Back to Dashboard
-                </Button>
-                <h1 className="text-3xl font-bold mb-2">{campaign.title}</h1>
-                <p className="text-muted-foreground">{campaign.description}</p>
-                <div className="flex gap-4 mt-4 text-sm font-medium">
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">Budget: ${campaign.total_budget}</span>
-                    <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">Status: {campaign.status}</span>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-blue-600" onClick={() => router.push('/dashboard/brand')}>
+                            &larr; Back to Dashboard
+                        </Button>
+                        <h1 className="text-3xl font-bold mb-2">{campaign.title}</h1>
+                        <p className="text-muted-foreground">{campaign.description}</p>
+                        <div className="flex gap-4 mt-4 text-sm font-medium">
+                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">Budget: ${campaign.total_budget}</span>
+                            <span className={`px-2 py-1 rounded ${campaign.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                Status: {campaign.status}
+                            </span>
+                        </div>
+                    </div>
+
+                    {campaign.status !== 'completed' && (
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive">End Campaign</Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>End this Campaign?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This will mark the campaign as completed. No further offers can be sent or negotiated.
+                                        Are you sure you are finished?
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleCompleteCampaign} className="bg-red-600 hover:bg-red-700">
+                                        Confirm Completion
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    )}
                 </div>
             </div>
 
