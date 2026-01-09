@@ -4,11 +4,26 @@ import { LayoutDashboard, Settings, LogOut, PlusCircle, FileText } from 'lucide-
 import { SignOutButton } from '@/components/sign-out-button'
 import { Button } from '@/components/ui/button'
 
-export default function DashboardLayout({
+import { createClient } from '@/lib/supabase-server'
+
+export default async function DashboardLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    // Get user role
+    let role = null
+    if (user) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+        role = profile?.role
+    }
     return (
         <div className="min-h-screen bg-white flex">
             {/* Sidebar */}
@@ -22,18 +37,24 @@ export default function DashboardLayout({
 
                 <nav className="flex-1 p-4 space-y-1">
                     <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Platform</p>
-                    <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-zinc-900 hover:bg-slate-200" asChild>
-                        <Link href="/dashboard/brand">
-                            <LayoutDashboard className="w-4 h-4 mr-2" />
-                            Brand Dashboard
-                        </Link>
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-zinc-900 hover:bg-slate-200" asChild>
-                        <Link href="/dashboard/bar">
-                            <LayoutDashboard className="w-4 h-4 mr-2" />
-                            Bar Dashboard
-                        </Link>
-                    </Button>
+
+                    {role === 'brand' && (
+                        <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-zinc-900 hover:bg-slate-200" asChild>
+                            <Link href="/dashboard/brand">
+                                <LayoutDashboard className="w-4 h-4 mr-2" />
+                                Brand Dashboard
+                            </Link>
+                        </Button>
+                    )}
+
+                    {role === 'bar' && (
+                        <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-zinc-900 hover:bg-slate-200" asChild>
+                            <Link href="/dashboard/bar">
+                                <LayoutDashboard className="w-4 h-4 mr-2" />
+                                Bar Dashboard
+                            </Link>
+                        </Button>
+                    )}
 
                     <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Settings</p>
                     <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-zinc-900 hover:bg-slate-200">
