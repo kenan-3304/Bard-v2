@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
     AlertDialog,
@@ -27,6 +28,8 @@ export default function OfferDetails() {
     const [loading, setLoading] = useState(true)
     const [offer, setOffer] = useState<any>(null)
     const [counterPrice, setCounterPrice] = useState('')
+    const [counterMode, setCounterMode] = useState(false)
+    const [counterNotes, setCounterNotes] = useState('')
 
     // ... (keep fetchOffer)
 
