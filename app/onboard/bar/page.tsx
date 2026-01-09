@@ -40,8 +40,7 @@ export default function BarOnboarding() {
     const [currentStep, setCurrentStep] = useState(1)
 
     // New state for verification flow
-    const [isVerified, setIsVerified] = useState(false)
-    const [manualEntry, setManualEntry] = useState(false)
+
 
     const [formData, setFormData] = useState({
         name: '',
@@ -69,7 +68,7 @@ export default function BarOnboarding() {
                 .single()
 
             if (profile?.role) {
-                // router.replace(`/dashboard/${profile.role}`)
+                router.replace(`/dashboard/${profile.role}`)
             }
         }
         checkRole()
@@ -77,22 +76,6 @@ export default function BarOnboarding() {
 
     const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
-    }
-
-    const handlePlaceSelect = (mainText: string, secondaryText: string) => {
-        setFormData(prev => ({
-            ...prev,
-            name: mainText,
-            location: secondaryText
-        }))
-        setIsVerified(true)
-        setManualEntry(false)
-    }
-
-    const resetVerification = () => {
-        setIsVerified(false)
-        setManualEntry(false)
-        setFormData(prev => ({ ...prev, name: '', location: '' }))
     }
 
     const toggleCollegeTown = (val: boolean) => {
@@ -140,6 +123,7 @@ export default function BarOnboarding() {
 
             alert("Setup complete! Redirecting...")
             router.refresh()
+            router.push('/dashboard/bar')
         } catch (error: any) {
             console.error(error)
             alert('Error saving bar: ' + error.message)
@@ -154,12 +138,10 @@ export default function BarOnboarding() {
             {/* Header */}
             <div className="text-center mb-10 max-w-2xl">
                 <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-3">
-                    {isVerified ? "Complete your profile" : "Find your bar"}
+                    Complete your profile
                 </h1>
                 <p className="text-lg text-gray-500">
-                    {isVerified
-                        ? "Tell us a bit more about your venue."
-                        : "Select your venue to verify your business and speed up onboarding."}
+                    Tell us a bit more about your venue.
                 </p>
             </div>
 
@@ -170,100 +152,32 @@ export default function BarOnboarding() {
                         {/* Section 1: Bar Basics (Smart Lookup) */}
                         <section className="space-y-6">
 
-                            {!isVerified && !manualEntry && (
-                                <div className="space-y-4 max-w-xl mx-auto">
-                                    <div className="space-y-2">
-                                        <Label className="text-gray-700 font-medium text-lg">Bar name or location</Label>
-                                        <PlacesAutocomplete
-                                            value=""
-                                            onChange={() => { }} // Internal state handles input
-                                            onOptionSelect={handlePlaceSelect}
-                                            placeholder="Start typing your bar’s name..."
-                                            className="h-14 text-lg rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-600 shadow-sm"
-                                        />
-                                    </div>
-                                    <div className="text-center pt-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => setManualEntry(true)}
-                                            className="text-sm text-gray-400 hover:text-gray-600 underline decoration-gray-300 underline-offset-4 transition-colors"
-                                        >
-                                            Can’t find your bar? Add it manually
-                                        </button>
-                                    </div>
+                            <div className="space-y-6 max-w-xl mx-auto">
+                                <div className="space-y-2">
+                                    <Label htmlFor="name" className="text-gray-700 font-medium">Bar Name</Label>
+                                    <Input
+                                        id="name"
+                                        name="name"
+                                        placeholder="e.g. Hokie House"
+                                        required
+                                        value={formData.name}
+                                        onChange={handleTextChange}
+                                        className="h-11 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600"
+                                    />
                                 </div>
-                            )}
-
-                            {/* Verified State Card */}
-                            {isVerified && (
-                                <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-6 relative group transition-all">
-                                    <div className="absolute top-4 right-4">
-                                        <button
-                                            type="button"
-                                            onClick={resetVerification}
-                                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
-                                            title="Edit"
-                                        >
-                                            <Edit2 className="w-4 h-4" />
-                                        </button>
-                                    </div>
-
-                                    <div className="flex items-start gap-4">
-                                        <div className="bg-blue-100 p-3 rounded-full shrink-0">
-                                            <ShieldCheck className="w-6 h-6 text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-gray-900 mb-1">{formData.name}</h3>
-                                            <p className="text-gray-600 flex items-center gap-1.5">
-                                                <MapPin className="w-4 h-4 text-gray-400" />
-                                                {formData.location}
-                                            </p>
-                                            <div className="mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                Verified location
-                                            </div>
-                                            <p className="mt-4 text-sm text-gray-500 italic">
-                                                This helps brands trust that your venue is real and active.
-                                            </p>
-                                        </div>
-                                    </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="location" className="text-gray-700 font-medium">City / State</Label>
+                                    <Input
+                                        id="location"
+                                        name="location"
+                                        placeholder="e.g. Blacksburg, VA"
+                                        required
+                                        value={formData.location}
+                                        onChange={handleTextChange}
+                                        className="h-11 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600"
+                                    />
                                 </div>
-                            )}
-
-                            {/* Manual Entry Fallback */}
-                            {manualEntry && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-300">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="name" className="text-gray-700 font-medium">Bar Name</Label>
-                                        <Input
-                                            id="name"
-                                            name="name"
-                                            placeholder="e.g. Hokie House"
-                                            required
-                                            value={formData.name}
-                                            onChange={handleTextChange}
-                                            className="h-11 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="location" className="text-gray-700 font-medium">City / State</Label>
-                                        <PlacesAutocomplete
-                                            value={formData.location}
-                                            onChange={(val) => setFormData(prev => ({ ...prev, location: val }))}
-                                            onSelect={(address) => setFormData(prev => ({ ...prev, location: address }))}
-                                            className="h-11 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600"
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2 text-center">
-                                        <button
-                                            type="button"
-                                            onClick={() => setManualEntry(false)}
-                                            className="text-sm text-gray-500 hover:text-gray-900"
-                                        >
-                                            Cancel manual entry
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+                            </div>
 
                             {/* College Town Toggle - Keep this part of basics but maybe hide until verified/manual? 
                   Let's show it only if verified or manual entry is active to keep "Find your bar" clean.

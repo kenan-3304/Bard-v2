@@ -28,11 +28,15 @@ export default function PlacesAutocomplete({
     placeholder = "Search for a location...",
     className
 }: PlacesAutocompleteProps) {
-    const { isLoaded } = useJsApiLoader({
+    const { isLoaded, loadError } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
         libraries,
     })
+
+    if (loadError) {
+        return <div className="text-red-500 text-sm p-2">Error loading Maps: {loadError.message}</div>
+    }
 
     if (!isLoaded) {
         return (
@@ -115,7 +119,7 @@ function PlacesAutocompleteContent({
             <Input
                 value={inputValue}
                 onChange={handleInput}
-                disabled={!ready}
+                disabled={false}
                 placeholder={placeholder}
                 className={`pl-10 h-11 ${className}`}
             />
