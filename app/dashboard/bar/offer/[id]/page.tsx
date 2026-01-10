@@ -114,6 +114,7 @@ export default function OfferDetails() {
             campaigns (
                 title,
                 description,
+                deliverables,
                 start_date,
                 end_date,
                 brands ( name )
@@ -255,22 +256,30 @@ export default function OfferDetails() {
                                 Required Deliverables
                             </h3>
                             <ul className="space-y-4">
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                                    <span className="text-sm text-slate-700 font-medium">Display signage in high-traffic area</span>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                                    <span className="text-sm text-slate-700 font-medium">Feature product on "Specials" menu</span>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                                    <span className="text-sm text-slate-700 font-medium">1x Social Post tagging {brandName}</span>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                                    <span className="text-sm text-slate-700 font-medium">Upload photo proof of activation</span>
-                                </li>
+                                {offer.campaigns.deliverables && offer.campaigns.deliverables.length > 0 ? (
+                                    offer.campaigns.deliverables.map((item: string, i: number) => (
+                                        <li key={i} className="flex items-start gap-3">
+                                            <CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                                            <span className="text-sm text-slate-700 font-medium">{item}</span>
+                                        </li>
+                                    ))
+                                ) : (
+                                    // Fallback for old campaigns without deliverables
+                                    <>
+                                        <li className="flex items-start gap-3">
+                                            <CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                                            <span className="text-sm text-slate-700 font-medium">Display signage in high-traffic area</span>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                                            <span className="text-sm text-slate-700 font-medium">Feature product on "Specials" menu</span>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                                            <span className="text-sm text-slate-700 font-medium">Upload photo proof of activation</span>
+                                        </li>
+                                    </>
+                                )}
                             </ul>
                         </div>
                     </div>

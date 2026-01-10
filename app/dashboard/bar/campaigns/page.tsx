@@ -1,8 +1,70 @@
-export default function CampaignsPage() {
+
+import { createClient } from '@/lib/supabase-server'
+import { OffersFeed } from '@/components/dashboard/OffersFeed'
+
+// Mock data (Subset for Active)
+const MOCK_ACTIVE_OFFERS = [
+    {
+        id: 'mock-2',
+        price: 1200,
+        status: 'accepted',
+        type: 'Sponsorship',
+        image_url: 'https://images.unsplash.com/photo-1519750566773-a6a6a571712d?auto=format&fit=crop&q=80&w=800',
+        campaigns: {
+            title: 'Tequila Tuesday Sponsorship',
+            description: 'Month-long sponsorship of your Taco Tuesday events. We will provide branded glassware and table tents.',
+            start_date: '2025-05-01',
+            end_date: '2025-05-31',
+            brands: { name: 'Tres Agaves' }
+        }
+    }
+]
+
+export default async function ActiveCampaignsPage() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    // Get Bar
+    const { data: bar } = await supabase
+        .from('bars')
+        .select('id')
+        .eq('owner_id', user?.id)
+        .single()
+
+    // Get Active Offers
+    const { data: realOffers } = await supabase
+        .from('offers')
+        .select(`
+            *,
+            campaigns (
+                title,
+                description,
+                start_date,
+                end_date,
+                brands ( name )
+            )
+        `)
+        .eq('bar_id', bar?.id)
+        .eq('status', 'accepted')
+        .order('created_at', { ascending: false })
+
+    const offers = [...(realOffers || []), ...MOCK_ACTIVE_OFFERS]
+
     return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
-            <h1 className="text-2xl font-bold text-slate-900 mb-2">Active Campaigns</h1>
-            <p className="text-slate-500">View your ongoing activations here. (Coming Soon)</p>
+        <div className="p-6 md:p-12 max-w-7xl mx-auto space-y-8">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Active Campaigns</h1>
+                <p className="text-slate-500 text-sm font-normal">
+                    You have {offers?.length || 0} active campaigns running.
+                </p>
+            </div>
+            {offers && offers.length > 0 ? (
+                <OffersFeed offers={offers} />
+            ) : (
+                <div className="text-center py-20 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                    <p className="text-slate-500">No active campaigns yet.</p>
+                </div>
+            )}
         </div>
     )
 }

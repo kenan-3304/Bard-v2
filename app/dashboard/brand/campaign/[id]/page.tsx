@@ -109,6 +109,17 @@ export default function CampaignDetails() {
                                 Status: {campaign.status}
                             </span>
                         </div>
+                        {/* Deliverables Section */}
+                        {campaign.deliverables && campaign.deliverables.length > 0 && (
+                            <div className="mt-6 border-t pt-4">
+                                <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-2">Required Deliverables</h3>
+                                <ul className="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                    {campaign.deliverables.map((item: string, i: number) => (
+                                        <li key={i}>{item}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </div>
 
                     {campaign.status !== 'completed' && (
