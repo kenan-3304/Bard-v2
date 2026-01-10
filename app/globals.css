@@ -123,3 +123,8 @@
     @apply bg-slate-50 text-slate-900;
   }
 }
+
+.pattern-dots {
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 10px 10px;
+}

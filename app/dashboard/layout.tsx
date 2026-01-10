@@ -1,6 +1,6 @@
 
 import Link from 'next/link'
-import { LayoutDashboard, Settings, LogOut, PlusCircle, FileText } from 'lucide-react'
+import { LayoutDashboard, Settings, LogOut, PlusCircle, FileText, Megaphone, History as HistoryIcon } from 'lucide-react'
 import { SignOutButton } from '@/components/sign-out-button'
 import { Button } from '@/components/ui/button'
 
@@ -56,12 +56,26 @@ export default async function DashboardLayout({
                     )}
 
                     {role === 'bar' && (
-                        <Button variant="ghost" className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/5 active:bg-white/10 transition-all font-medium h-9" asChild>
-                            <Link href="/dashboard/bar">
-                                <LayoutDashboard className="w-4 h-4 mr-3 opacity-70" />
-                                Bar Dashboard
-                            </Link>
-                        </Button>
+                        <>
+                            <Button variant="ghost" className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/5 active:bg-white/10 transition-all font-medium h-9" asChild>
+                                <Link href="/dashboard/bar">
+                                    <LayoutDashboard className="w-4 h-4 mr-3 opacity-70" />
+                                    Offers
+                                </Link>
+                            </Button>
+                            <Button variant="ghost" className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/5 active:bg-white/10 transition-all font-medium h-9" asChild>
+                                <Link href="/dashboard/bar/campaigns">
+                                    <Megaphone className="w-4 h-4 mr-3 opacity-70" />
+                                    Active Campaigns
+                                </Link>
+                            </Button>
+                            <Button variant="ghost" className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/5 active:bg-white/10 transition-all font-medium h-9" asChild>
+                                <Link href="/dashboard/bar/history">
+                                    <HistoryIcon className="w-4 h-4 mr-3 opacity-70" />
+                                    History
+                                </Link>
+                            </Button>
+                        </>
                     )}
                 </nav>
 
