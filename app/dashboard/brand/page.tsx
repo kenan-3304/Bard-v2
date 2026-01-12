@@ -17,12 +17,15 @@ export default async function BrandDashboard() {
         .eq('owner_id', user?.id)
         .single()
 
-    // Get Campaigns (Fix for multiple rows)
     const { data: campaigns } = await supabase
         .from('campaigns')
         .select('*')
         .eq('brand_id', brand?.id)
         .order('created_at', { ascending: false })
+
+    const { count: barCount } = await supabase
+        .from('bars')
+        .select('*', { count: 'exact', head: true })
 
     const activeSpend = campaigns ? campaigns.reduce((acc: number, c: any) => acc + (c.status === 'active' ? c.total_budget : 0), 0) : 0
     const activeCampaigns = campaigns ? campaigns.filter((c: any) => c.status === 'active').length : 0
@@ -70,14 +73,14 @@ export default async function BrandDashboard() {
                 </Card>
                 <Card className="bg-white border-slate-200">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Est. Network Reach</CardTitle>
+                        <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Network Size</CardTitle>
                         <span className="text-blue-500">
                             <Users className="h-4 w-4" />
                         </span>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-black text-slate-900 font-mono">14.2k</div>
-                        <p className="text-xs text-slate-500 mt-1">Monthly impressions available</p>
+                        <div className="text-3xl font-black text-slate-900 font-mono">{barCount || 0}</div>
+                        <p className="text-xs text-slate-500 mt-1">Total bars in network</p>
                     </CardContent>
                 </Card>
             </div>
@@ -89,6 +92,7 @@ export default async function BrandDashboard() {
                             <tr>
                                 <th className="px-6 py-4 font-semibold text-slate-900 w-1/3">Campaign</th>
                                 <th className="px-6 py-4 font-semibold text-slate-900">Status</th>
+                                <th className="px-6 py-4 font-semibold text-slate-900">Compliance</th>
                                 <th className="px-6 py-4 font-semibold text-slate-900">Budget</th>
                                 <th className="px-6 py-4 font-semibold text-slate-900 text-right">Action</th>
                             </tr>
@@ -102,6 +106,13 @@ export default async function BrandDashboard() {
                                     </td>
                                     <td className="px-6 py-5 align-top pt-6">
                                         <StatusBadge status={campaign.status} />
+                                    </td>
+                                    <td className="px-6 py-5 align-top pt-6">
+                                        <div className="flex items-center text-emerald-600 font-medium text-sm">
+                                            <span className="bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full text-xs font-semibold border border-emerald-200">
+                                                Green / 100%
+                                            </span>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-5 align-top pt-6">
                                         <div className="flex flex-col">

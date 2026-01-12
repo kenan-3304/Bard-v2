@@ -71,10 +71,9 @@ export function OfferCard({ offer }: OfferCardProps) {
     return (
         <Card className="group flex flex-col h-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md hover:border-slate-300">
 
-            {/* Brand Accent Strip (Left Side) */}
-            <div className={cn("absolute left-0 top-0 bottom-0 w-1", brandAccentClass, "opacity-75 group-hover:opacity-100 transition-opacity")} />
 
-            <div className="flex flex-col h-full pl-1"> {/* Push content right to accommodate border */}
+
+            <div className="flex flex-col h-full"> {/* Push content right to accommodate border */}
 
                 {/* 1. Header (Logo & Status) */}
                 <div className="px-6 py-5 flex justify-between items-start border-b border-slate-50">

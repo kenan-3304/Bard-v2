@@ -2,23 +2,9 @@
 import { createClient } from '@/lib/supabase-server'
 import { OffersFeed } from '@/components/dashboard/OffersFeed'
 
-// Mock data (Subset for Active)
-const MOCK_ACTIVE_OFFERS = [
-    {
-        id: 'mock-2',
-        price: 1200,
-        status: 'accepted',
-        type: 'Sponsorship',
-        image_url: 'https://images.unsplash.com/photo-1519750566773-a6a6a571712d?auto=format&fit=crop&q=80&w=800',
-        campaigns: {
-            title: 'Tequila Tuesday Sponsorship',
-            description: 'Month-long sponsorship of your Taco Tuesday events. We will provide branded glassware and table tents.',
-            start_date: '2025-05-01',
-            end_date: '2025-05-31',
-            brands: { name: 'Tres Agaves' }
-        }
-    }
-]
+
+
+export const dynamic = 'force-dynamic'
 
 export default async function ActiveCampaignsPage() {
     const supabase = await createClient()
@@ -32,7 +18,7 @@ export default async function ActiveCampaignsPage() {
         .single()
 
     // Get Active Offers
-    const { data: realOffers } = await supabase
+    const { data: offers } = await supabase
         .from('offers')
         .select(`
             *,
@@ -47,8 +33,6 @@ export default async function ActiveCampaignsPage() {
         .eq('bar_id', bar?.id)
         .eq('status', 'accepted')
         .order('created_at', { ascending: false })
-
-    const offers = [...(realOffers || []), ...MOCK_ACTIVE_OFFERS]
 
     return (
         <div className="p-6 md:p-12 max-w-7xl mx-auto space-y-8">

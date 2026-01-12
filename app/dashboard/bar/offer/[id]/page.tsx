@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import { acceptOffer } from '../../actions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
@@ -22,70 +23,9 @@ import {
 } from "@/components/ui/alert-dialog"
 import { ArrowLeft, CheckCircle2, ChevronRight, Download, ExternalLink, Calendar, Info } from 'lucide-react'
 import { StatusBadge } from '@/components/status-badge'
+import { toast } from 'sonner'
 
-// Mock data (Shared with Dashboard)
-const MOCK_OFFERS = [
-    {
-        id: 'mock-1',
-        price: 500,
-        status: 'sent',
-        campaigns: {
-            title: 'Summer Ale Launch Party',
-            description: 'Host a Friday night takeover featuring our new Summer Ale. Includes merch giveaways and social media support.',
-            start_date: '2025-06-15',
-            end_date: '2025-06-15',
-            brands: { name: 'Coastal Brewing Co.' }
-        }
-    },
-    {
-        id: 'mock-2',
-        price: 1200,
-        status: 'accepted',
-        campaigns: {
-            title: 'Tequila Tuesday Sponsorship',
-            description: 'Month-long sponsorship of your Taco Tuesday events. We will provide branded glassware and table tents.',
-            start_date: '2025-05-01',
-            end_date: '2025-05-31',
-            brands: { name: 'Tres Agaves' }
-        }
-    },
-    {
-        id: 'mock-3',
-        price: 350,
-        status: 'completed',
-        campaigns: {
-            title: 'Late Night DJ Set',
-            description: 'Cover the cost of a DJ for one Saturday night in exchange for exclusive pouring rights on draft.',
-            start_date: '2025-04-20',
-            end_date: '2025-04-20',
-            brands: { name: 'NightOwl Energy' }
-        }
-    },
-    {
-        id: 'mock-4',
-        price: 750,
-        status: 'countered',
-        campaigns: {
-            title: 'Game Day Watch Party',
-            description: 'Sponsor the big game viewing party. Looking for banner placement and drink specials.',
-            start_date: '2025-09-10',
-            end_date: '2025-09-10',
-            brands: { name: 'FanZone Sports' }
-        }
-    },
-    {
-        id: 'mock-5',
-        price: 2000,
-        status: 'sent',
-        campaigns: {
-            title: 'Holiday Spirit Week',
-            description: 'Full week activation for the holiday season. Custom cocktail menu featuring our spices.',
-            start_date: '2025-12-20',
-            end_date: '2025-12-27',
-            brands: { name: 'Spice Route Spirits' }
-        }
-    }
-]
+
 
 export default function OfferDetails() {
     const { id } = useParams()
@@ -98,15 +38,7 @@ export default function OfferDetails() {
     const [counterNotes, setCounterNotes] = useState('')
 
     async function fetchOffer() {
-        // 1. Check Mock Data First
-        const mockOffer = MOCK_OFFERS.find(o => o.id === id)
-        if (mockOffer) {
-            setOffer(mockOffer)
-            setLoading(false)
-            return
-        }
-
-        // 2. Fetch from DB
+        // Fetch from DB
         const { data } = await supabase
             .from('offers')
             .select(`
@@ -132,22 +64,25 @@ export default function OfferDetails() {
     }, [id])
 
     const handleAccept = async () => {
-        const { error } = await supabase
-            .from('offers')
-            .update({ status: 'accepted' })
-            .eq('id', id)
 
-        if (error) alert('Error: ' + error.message)
-        else {
-            alert('Offer accepted!')
+        const { error } = await acceptOffer(id as string)
+
+        if (error) {
+            toast.error('Error accepting offer', { description: error })
+        } else {
+            toast.success('Offer accepted!', { description: "You can now view the campaign details and upload proof." })
             fetchOffer()
+            // router.refresh() // revalidatePath handles the data refresh on list pages, but we might still want to refresh current Layout if needed, but fetchOffer updates local state.
+            // Actually, keep router.refresh() to ensure server components in the layout might update if they depend on this. 
             router.refresh()
-            router.push('/dashboard/bar')
         }
     }
 
     const handleCounter = async () => {
         if (!counterPrice) return
+
+
+
         const { error } = await supabase
             .from('offers')
             .update({

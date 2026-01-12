@@ -1,6 +1,7 @@
 
 import Link from 'next/link'
 import { LayoutDashboard, Settings, LogOut, PlusCircle, FileText, Megaphone, History as HistoryIcon } from 'lucide-react'
+import { Toaster } from 'sonner'
 import { SignOutButton } from '@/components/sign-out-button'
 import { Button } from '@/components/ui/button'
 
@@ -25,7 +26,7 @@ export default async function DashboardLayout({
         role = profile?.role
     }
     return (
-        <div className="min-h-screen bg-white flex">
+        <div className="h-screen overflow-hidden bg-white flex">
             {/* Sidebar */}
             <aside className="w-64 bg-slate-900 flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out">
                 <div className="h-16 flex items-center px-6 border-b border-white/10">
@@ -87,12 +88,13 @@ export default async function DashboardLayout({
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col min-w-0 bg-slate-50">
+            <main className="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-hidden">
                 {/* Mobile Header (optional implementation) typically goes here */}
 
                 <div className="flex-1 overflow-auto">
                     {children}
                 </div>
+                <Toaster />
             </main>
         </div>
     )

@@ -25,10 +25,18 @@ export default async function PartnerNetworkPage() {
                 {bars?.map((bar: any) => (
                     <Card key={bar.id} className="group hover:shadow-lg transition-all duration-300 border-slate-200 overflow-hidden">
                         <div className="bg-slate-100 aspect-video w-full relative">
-                            {/* Placeholder for bar image */}
-                            <div className="absolute inset-0 flex items-center justify-center text-slate-300">
-                                <MapPin className="w-8 h-8 opacity-20" />
-                            </div>
+                            {bar.image_url ? (
+                                <img
+                                    src={bar.image_url}
+                                    alt={bar.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                /* Placeholder for bar image */
+                                <div className="absolute inset-0 flex items-center justify-center text-slate-300">
+                                    <MapPin className="w-8 h-8 opacity-20" />
+                                </div>
+                            )}
                         </div>
                         <CardHeader className="p-4 pb-2">
                             <div className="flex justify-between items-start gap-4">
