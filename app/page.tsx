@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase-server'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Store, Zap } from 'lucide-react'
+import { Building2, Users } from 'lucide-react'
 import { SignOutButton } from '@/components/sign-out-button'
 
 export default async function Home() {
@@ -23,16 +23,20 @@ export default async function Home() {
   // State 1: Not Authenticated
   if (!user) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gray-50">
-        <div className="text-center space-y-6 max-w-2xl">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
-            Welcome to Deal OS
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            The operating system for bars and brands to connect and grow.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Button asChild size="lg">
+      <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#134E4A] bg-[length:400%_400%] animate-gradient">
+        <div className="text-center space-y-6 max-w-2xl relative">
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-48 h-48 bg-teal-500/20 blur-3xl rounded-full pointer-events-none" />
+          <div className="relative flex flex-col items-center">
+
+            <h1 className="text-5xl font-extrabold tracking-tight lg:text-6xl text-white mb-2">
+              Welcome to Proof
+            </h1>
+            <p className="text-xl text-[#94A3B8]">
+              Your AI compliance agent for alcohol activations.
+            </p>
+          </div>
+          <div className="flex justify-center gap-4 pt-4">
+            <Button asChild size="lg" className="bg-[#0D9488] hover:bg-[#0D9488]/90 text-white text-lg px-8 py-6 rounded-xl shadow-[0_0_20px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_rgba(13,148,136,0.5)] transition-all duration-300">
               <Link href="/login">Get Started</Link>
             </Button>
           </div>
@@ -88,55 +92,49 @@ export default async function Home() {
       <div className="w-full max-w-5xl mx-auto space-y-12">
         <div className="text-center space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
-            Start your first activation
+            How do you use Proof?
           </h1>
           <p className="text-xl text-gray-500 font-medium">
-            Choose how you participate in college nightlife deals.
+            Select your role to get started.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
-          {/* Bar Card */}
-          <Link href="/onboard/bar" className="group">
-            <div className="relative h-full bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl border border-gray-200 hover:border-blue-600 transition-all duration-300 transform hover:-translate-y-1">
+          {/* Brand Card */}
+          <Link href="/onboard/brand" className="group">
+            <div className="relative h-full bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl border border-gray-200 hover:border-[#0D9488] transition-all duration-300 transform hover:-translate-y-1">
               <div className="flex flex-col h-full justify-between space-y-6">
                 <div>
-                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-colors duration-300">
-                    <Store className="w-6 h-6 text-blue-600 group-hover:text-white transition-colors" />
+                  <div className="w-12 h-12 bg-[#0D9488]/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#0D9488] transition-colors duration-300">
+                    <Building2 className="w-6 h-6 text-[#0D9488] group-hover:text-white transition-colors" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">I run a Bar</h2>
-                  <p className="text-lg font-medium text-blue-600 mb-4">
-                    Receive brand offers. Host activations. Get paid.
-                  </p>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    No fees. No cold pitches. Only vetted campaigns.
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Alcohol Brand</h2>
+                  <p className="text-lg font-medium text-[#0D9488] mb-4">
+                    Plan bar activations, enforce ABC compliance, and generate audit-ready packets.
                   </p>
                 </div>
-                <div className="pt-4 flex items-center text-sm font-semibold text-blue-600 group-hover:translate-x-1 transition-transform">
-                  Register Venue <span className="ml-2">→</span>
+                <div className="pt-4 flex items-center text-sm font-semibold text-[#0D9488] group-hover:translate-x-1 transition-transform">
+                  Continue as Brand <span className="ml-2">→</span>
                 </div>
               </div>
             </div>
           </Link>
 
-          {/* Brand Card */}
-          <Link href="/onboard/brand" className="group">
-            <div className="relative h-full bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl border border-gray-200 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-1">
+          {/* Agency Card */}
+          <Link href="/onboard/agency" className="group">
+            <div className="relative h-full bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl border border-gray-200 hover:border-[#0D9488] transition-all duration-300 transform hover:-translate-y-1">
               <div className="flex flex-col h-full justify-between space-y-6">
                 <div>
-                  <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-amber-500 transition-colors duration-300">
-                    <Zap className="w-6 h-6 text-amber-600 group-hover:text-white transition-colors" />
+                  <div className="w-12 h-12 bg-[#0D9488]/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#0D9488] transition-colors duration-300">
+                    <Users className="w-6 h-6 text-[#0D9488] group-hover:text-white transition-colors" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">I represent a Brand</h2>
-                  <p className="text-lg font-medium text-amber-600 mb-4">
-                    Launch activations. Reach students. Prove ROI.
-                  </p>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    Target real college bars. Close faster. Get execution proof.
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Agency / Field Marketing</h2>
+                  <p className="text-lg font-medium text-[#0D9488] mb-4">
+                    Manage compliant activations on behalf of your alcohol brand clients.
                   </p>
                 </div>
-                <div className="pt-4 flex items-center text-sm font-semibold text-amber-600 group-hover:translate-x-1 transition-transform">
-                  Start Campaign <span className="ml-2">→</span>
+                <div className="pt-4 flex items-center text-sm font-semibold text-[#0D9488] group-hover:translate-x-1 transition-transform">
+                  Continue as Agency <span className="ml-2">→</span>
                 </div>
               </div>
             </div>
