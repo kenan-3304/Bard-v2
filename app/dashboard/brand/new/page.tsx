@@ -1,137 +1,300 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Loader2, CheckCircle2, AlertTriangle, XCircle, ExternalLink, CheckSquare, ArrowRight } from 'lucide-react'
 
-interface Bar {
-    id: string
-    name: string
-    location: string
-}
-
-export default function NewCampaign() {
+export default function NewActivation() {
     const router = useRouter()
     const supabase = createClient()
     const [loading, setLoading] = useState(false)
-    const [bars, setBars] = useState<Bar[]>([])
-    const [selectedBars, setSelectedBars] = useState<string[]>([])
+    const [view, setView] = useState<'form' | 'analyzing' | 'results'>('form')
+    const [status, setStatus] = useState<'compliant' | 'conditional' | 'blocked'>('compliant')
+
     const [formData, setFormData] = useState({
         title: '',
-        promo_text: '',
-        total_budget: '',
+        type: '',
+        venue: '',
+        city: 'Charlottesville', // Default or empty, user input
+        description: '',
         start_date: '',
-        end_date: '',
-        price_per_offer: '', // How much each bar gets (initial offer)
     })
-    const [brandAssets, setBrandAssets] = useState<File | null>(null)
 
-    useEffect(() => {
-        async function fetchBars() {
-            const { data } = await supabase.from('bars').select('id, name, location')
-            if (data) setBars(data)
+    const isFormValid = formData.title && formData.type && formData.venue && formData.start_date
+
+    const handleComplianceCheck = async () => {
+        setView('analyzing')
+
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 2500))
+
+        const desc = formData.description.toLowerCase()
+        const blockedPhrases = ["bar tab", "open bar", "free drinks", "pay the bar", "reimburse"]
+
+        if (blockedPhrases.some(phrase => desc.includes(phrase))) {
+            setStatus('blocked')
+        } else if (formData.type === 'Sponsored Event') {
+            setStatus('conditional')
+        } else {
+            setStatus('compliant')
         }
-        fetchBars()
-    }, [])
 
-    const [deliverables, setDeliverables] = useState<string[]>(['Display signage in high-traffic area', 'Feature product on "Specials" menu', 'Upload photo proof of activation'])
-    const [newDeliverable, setNewDeliverable] = useState('')
-
-    const addDeliverable = () => {
-        if (newDeliverable.trim()) {
-            setDeliverables([...deliverables, newDeliverable.trim()])
-            setNewDeliverable('')
-        }
+        setView('results')
     }
 
-    const removeDeliverable = (index: number) => {
-        setDeliverables(deliverables.filter((_, i) => i !== index))
+    if (view === 'analyzing') {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+                <div className="relative">
+                    <div className="absolute inset-0 bg-[#0D9488]/20 rounded-full blur-xl animate-pulse"></div>
+                    <Loader2 className="w-16 h-16 text-[#0D9488] animate-spin relative z-10" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">Agent analyzing activation against Virginia ABC regulations...</h2>
+                <p className="text-slate-500 max-w-md">Checking for prohibited practices, required permits, and sponsorship limits.</p>
+            </div>
+        )
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setLoading(true)
+    if (view === 'results') {
+        return (
+            <div className="max-w-4xl mx-auto py-8 px-6">
+                <div className="mb-8">
+                    <Button variant="ghost" onClick={() => setView('form')} className="pl-0 hover:bg-transparent hover:text-primary">
+                        <ChevronLeft className="w-4 h-4 mr-2" />
+                        Back to Edit
+                    </Button>
+                </div>
 
-        try {
-            // Compliance Check Mock
-            const bannedWords = ['free', 'unlimited', '2-for-1']
-            const lowerText = formData.promo_text.toLowerCase()
-            const violation = bannedWords.find(word => lowerText.includes(word))
+                <div className="space-y-8">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900 mb-2">Compliance Check Results</h1>
+                        <p className="text-slate-500 font-medium">{formData.title}</p>
+                    </div>
 
-            if (violation) {
-                alert(`Compliance Alert: usage of "${violation}" violates VA ABC regulations. Please revise.`)
-                setLoading(false)
-                return
-            }
+                    {/* Status Badge */}
+                    <Card className={`border-l-4 shadow-md ${status === 'compliant' ? 'border-l-emerald-500 bg-emerald-50/50' :
+                        status === 'conditional' ? 'border-l-amber-500 bg-amber-50/50' :
+                            'border-l-red-500 bg-red-50/50'
+                        }`}>
+                        <CardContent className="pt-6 flex items-start gap-4">
+                            {status === 'compliant' && <CheckCircle2 className="w-8 h-8 text-emerald-600 mt-1 flex-shrink-0" />}
+                            {status === 'conditional' && <AlertTriangle className="w-8 h-8 text-amber-600 mt-1 flex-shrink-0" />}
+                            {status === 'blocked' && <XCircle className="w-8 h-8 text-red-600 mt-1 flex-shrink-0" />}
 
-            // Simulate Network Delay (Launch Logic)
-            await new Promise(resolve => setTimeout(resolve, 2000))
+                            <div>
+                                <h2 className={`text-xl font-bold mb-1 ${status === 'compliant' ? 'text-emerald-900' :
+                                    status === 'conditional' ? 'text-amber-900' :
+                                        'text-red-900'
+                                    }`}>
+                                    {status === 'compliant' && "✅ Compliant — Activation Allowed"}
+                                    {status === 'conditional' && "⚠️ Conditional — Requires ABC Filing"}
+                                    {status === 'blocked' && "🚫 Blocked — Compliance Violation"}
+                                </h2>
+                                <p className={`text-sm ${status === 'compliant' ? 'text-emerald-700' :
+                                    status === 'conditional' ? 'text-amber-700' :
+                                        'text-red-700'
+                                    }`}>
+                                    {status === 'compliant' && "This activation meets all standard Virginia ABC requirements for brand promotion."}
+                                    {status === 'conditional' && "This activation is allowed but requires explicit approval and form submission to VA ABC."}
+                                    {status === 'blocked' && "This activation contains elements that violate Virginia ABC prohibitions on tied-house induce."}
+                                </p>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) throw new Error('Not authenticated')
+                    <div className="grid md:grid-cols-2 gap-8">
+                        {/* Agent Reasoning */}
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <span className="w-1 h-6 bg-[#0D9488] rounded-full inline-block"></span>
+                                Agent Reasoning
+                            </h3>
+                            <ul className="space-y-3 pl-2">
+                                {status === 'compliant' && (
+                                    <>
+                                        <li className="flex gap-3 text-sm text-slate-600">
+                                            <span className="text-emerald-500 font-bold">•</span>
+                                            Activation type "{formData.type}" flows through standard solicitor privileges.
+                                        </li>
+                                        <li className="flex gap-3 text-sm text-slate-600">
+                                            <span className="text-emerald-500 font-bold">•</span>
+                                            No prohibited financial inducements detected in description.
+                                        </li>
+                                    </>
+                                )}
+                                {status === 'conditional' && (
+                                    <>
+                                        <li className="flex gap-3 text-sm text-slate-600">
+                                            <span className="text-amber-500 font-bold">•</span>
+                                            "Sponsored Event" requires advance notice and sponsorship limitation checks.
+                                        </li>
+                                        <li className="flex gap-3 text-sm text-slate-600">
+                                            <span className="text-amber-500 font-bold">•</span>
+                                            Must verify that value provided does not exceed statutory caps per licensee.
+                                        </li>
+                                    </>
+                                )}
+                                {status === 'blocked' && (
+                                    <>
+                                        <li className="flex gap-3 text-sm text-slate-600">
+                                            <span className="text-red-500 font-bold">•</span>
+                                            Description contains prohibited terms implying financial contribution to retailer.
+                                        </li>
+                                        <li className="flex gap-3 text-sm text-slate-600">
+                                            <span className="text-red-500 font-bold">•</span>
+                                            Direct reimbursement or "bar tabs" are strictly forbidden under Tied House laws.
+                                        </li>
+                                    </>
+                                )}
+                            </ul>
+                        </div>
 
-            // 1. Get Brand ID
-            const { data: brand } = await supabase
-                .from('brands')
-                .select('id')
-                .eq('owner_id', user.id)
-                .single()
+                        {/* Required Forms */}
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <span className="w-1 h-6 bg-slate-200 rounded-full inline-block"></span>
+                                Required Forms
+                            </h3>
+                            <div className="space-y-3">
+                                {status === 'blocked' ? (
+                                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg text-slate-500 italic text-sm">
+                                        No forms available — activation is not permitted as described.
+                                    </div>
+                                ) : (
+                                    <>
+                                        {(formData.type === 'Tasting / Sampling' || status === 'compliant') && (
+                                            <a
+                                                href="https://www.abc.virginia.gov/library/licenses/pdfs/solicitortasting.pdf"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:border-[#0D9488] hover:shadow-sm transition-all group"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="bg-slate-100 p-2 rounded group-hover:bg-[#0D9488]/10 transition-colors">
+                                                        <ExternalLink className="w-4 h-4 text-slate-500 group-hover:text-[#0D9488]" />
+                                                    </div>
+                                                    <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">Solicitor Tasting Permit (Form 805-97)</span>
+                                                </div>
+                                            </a>
+                                        )}
+                                        {formData.type === 'Sponsored Event' && (
+                                            <a
+                                                href="https://www.abc.virginia.gov/licenses/spirits-industry-resources/manufacturer-wholesaler-sponsorship-request"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:border-[#0D9488] hover:shadow-sm transition-all group"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="bg-slate-100 p-2 rounded group-hover:bg-[#0D9488]/10 transition-colors">
+                                                        <ExternalLink className="w-4 h-4 text-slate-500 group-hover:text-[#0D9488]" />
+                                                    </div>
+                                                    <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">Manufacturer/Wholesaler Sponsorship Request</span>
+                                                </div>
+                                            </a>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
-            if (!brand) throw new Error('Brand not found')
+                    {/* Suggested Legal Alternatives (Blocked Only) */}
+                    {status === 'blocked' && (
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-bold text-slate-900">Suggested Legal Alternatives</h3>
+                            <div className="bg-[#0D9488]/5 border border-[#0D9488]/20 rounded-xl p-6 space-y-4">
+                                <div className="flex items-start gap-3">
+                                    <CheckCircle2 className="w-5 h-5 text-[#0D9488] mt-0.5 flex-shrink-0" />
+                                    <span className="text-sm text-slate-700"><strong>Convert to a licensed tasting event</strong> — brand ambassador conducts samples under a Solicitor Tasting Permit (Form 805-97)</span>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <CheckCircle2 className="w-5 h-5 text-[#0D9488] mt-0.5 flex-shrink-0" />
+                                    <span className="text-sm text-slate-700"><strong>Structure as a sponsored cultural or sporting event</strong> with proper ABC filing</span>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <CheckCircle2 className="w-5 h-5 text-[#0D9488] mt-0.5 flex-shrink-0" />
+                                    <span className="text-sm text-slate-700"><strong>Limit brand involvement to POS signage</strong> and branded materials within VA ABC value limits ($215)</span>
+                                </div>
+                            </div>
+                            <Button
+                                onClick={() => setView('form')}
+                                variant="outline"
+                                className="w-full h-12 text-lg border-[#0D9488] text-[#0D9488] hover:bg-[#0D9488]/10"
+                            >
+                                <ChevronLeft className="w-5 h-5 mr-2" />
+                                Revise Activation
+                            </Button>
+                        </div>
+                    )}
 
-            // 2. Create Campaign
-            const { data: campaign, error: campaignError } = await supabase
-                .from('campaigns')
-                .insert({
-                    brand_id: brand.id,
-                    title: formData.title,
-                    description: formData.promo_text,
-                    total_budget: parseFloat(formData.total_budget || '0'),
-                    start_date: formData.start_date,
-                    end_date: formData.end_date,
-                    deliverables: deliverables, // Insert deliverables
-                    status: 'active'
-                })
-                .select()
-                .single()
+                    <div className="my-8 h-px bg-slate-200"></div>
 
-            if (campaignError) throw campaignError
+                    {/* Checklist */}
+                    {status !== 'blocked' && (
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-bold text-slate-900">Compliance Checklist</h3>
+                            <div className="bg-slate-50 rounded-xl p-6 space-y-4 border border-slate-200">
+                                <div className="flex items-start gap-3">
+                                    <CheckSquare className="w-5 h-5 text-[#0D9488] mt-0.5" />
+                                    <span className="text-sm text-slate-700">Solicitor Tasting Permit obtained / active</span>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <CheckSquare className="w-5 h-5 text-[#0D9488] mt-0.5" />
+                                    <span className="text-sm text-slate-700">Tasting limited to licensed premises areas only</span>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <CheckSquare className="w-5 h-5 text-[#0D9488] mt-0.5" />
+                                    <span className="text-sm text-slate-700">No more than 6 oz wine / 2 oz spirits per person per day</span>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <CheckSquare className="w-5 h-5 text-[#0D9488] mt-0.5" />
+                                    <span className="text-sm text-slate-700">Brand ambassador present on-site at all times</span>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <CheckSquare className="w-5 h-5 text-[#0D9488] mt-0.5" />
+                                    <span className="text-sm text-slate-700">Signage within VA ABC value limits ($215 per brand)</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
-            // 3. Create Offers
-            const offersToCreate = selectedBars.map(barId => ({
-                campaign_id: campaign.id,
-                bar_id: barId,
-                price: parseFloat(formData.price_per_offer || '0'),
-                status: 'sent',
-                bar_notes: '' // Empty initially
-            }))
-
-            if (offersToCreate.length > 0) {
-                const { error: offersError } = await supabase
-                    .from('offers')
-                    .insert(offersToCreate)
-
-                if (offersError) throw offersError
-            }
-
-            // Success
-            // alert('Campaign Launched Successfully!') // Optional: Remove alert since we redirect, user asked for green success message but redirect is fine or we can toast. Using alert for now as mock.
-            router.push('/dashboard/brand')
-            router.refresh()
-
-        } catch (error: any) {
-            alert('Error: ' + error.message)
-            setLoading(false)
-        }
+                    {status !== 'blocked' && (
+                        <div className="pt-4">
+                            <Button
+                                onClick={() => {
+                                    const params = new URLSearchParams({
+                                        title: formData.title,
+                                        type: formData.type,
+                                        venue: formData.venue,
+                                        date: formData.start_date,
+                                        city: formData.city
+                                    })
+                                    router.push(`/dashboard/brand/activation-setup?${params.toString()}`)
+                                }}
+                                className="w-full h-12 text-lg bg-[#0D9488] hover:bg-[#0D9488]/90 text-white shadow-lg shadow-teal-900/10"
+                            >
+                                Continue to Activation Setup <ArrowRight className="ml-2 w-5 h-5" />
+                            </Button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -140,7 +303,7 @@ export default function NewCampaign() {
                 <Button variant="ghost" asChild className="pl-0 hover:bg-transparent hover:text-primary">
                     <Link href="/dashboard/brand">
                         <ChevronLeft className="w-4 h-4 mr-2" />
-                        Back to Command Center
+                        Back to Dashboard
                     </Link>
                 </Button>
             </div>
@@ -149,165 +312,104 @@ export default function NewCampaign() {
                 {/* The Builder Form */}
                 <div className="space-y-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900 mb-2">Launch New Campaign</h1>
-                        <p className="text-slate-500">Create your offer and launch it to the network.</p>
+                        <h1 className="text-3xl font-bold text-slate-900 mb-2">Create Activation</h1>
+                        <p className="text-slate-500">Describe your activation and the compliance agent will evaluate it.</p>
                     </div>
 
                     <Card className="border-slate-200 shadow-sm">
                         <CardHeader className="bg-slate-50 border-b border-slate-100 pb-6">
-                            <CardTitle className="text-xl font-bold text-slate-900">Campaign Details</CardTitle>
+                            <CardTitle className="text-xl font-bold text-slate-900">Activation Details</CardTitle>
                         </CardHeader>
                         <CardContent className="pt-8 space-y-8">
 
-                            {/* Title & Promo Text */}
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="title" className="text-slate-700 font-semibold">Campaign Title</Label>
-                                    <Input
-                                        id="title"
-                                        placeholder="e.g. Summer Ale Launch 2024"
-                                        value={formData.title}
-                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                        className="h-12 text-lg"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="promo_text" className="text-slate-700 font-semibold">Promo Text</Label>
-                                    <Textarea
-                                        id="promo_text"
-                                        placeholder="Enter the promotional copy for the campaign..."
-                                        value={formData.promo_text}
-                                        onChange={(e) => setFormData({ ...formData, promo_text: e.target.value })}
-                                        rows={4}
-                                        className="resize-none"
-                                    />
-                                    <p className="text-xs text-slate-500">This text will be checked for compliance.</p>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="assets" className="text-slate-700 font-semibold">Brand Assets</Label>
-                                    <Input
-                                        id="assets"
-                                        type="file"
-                                        onChange={(e) => setBrandAssets(e.target.files ? e.target.files[0] : null)}
-                                        className="cursor-pointer"
-                                    />
-                                </div>
+                            {/* Title */}
+                            <div className="space-y-2">
+                                <Label htmlFor="title" className="text-slate-700 font-semibold">Activation Name</Label>
+                                <Input
+                                    id="title"
+                                    placeholder="e.g. Tito's Summer Tasting at The Whiskey Jar"
+                                    value={formData.title}
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    className="h-12 text-lg"
+                                />
                             </div>
 
-                            {/* Financials Row */}
+                            {/* Type */}
+                            <div className="space-y-2">
+                                <Label htmlFor="type" className="text-slate-700 font-semibold">Activation Type</Label>
+                                <Select onValueChange={(value) => setFormData({ ...formData, type: value })}>
+                                    <SelectTrigger className="h-12">
+                                        <SelectValue placeholder="Select type..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Tasting / Sampling">Tasting / Sampling</SelectItem>
+                                        <SelectItem value="Sponsored Event">Sponsored Event</SelectItem>
+                                        <SelectItem value="Ambassador Visit">Ambassador Visit</SelectItem>
+                                        <SelectItem value="Brand Promotion / Other">Brand Promotion / Other</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Venue & City */}
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="total_budget" className="text-slate-700 font-semibold">Total Budget ($)</Label>
+                                    <Label htmlFor="venue" className="text-slate-700 font-semibold">Venue Name</Label>
                                     <Input
-                                        id="total_budget"
-                                        type="number"
-                                        placeholder="5000"
-                                        value={formData.total_budget}
-                                        onChange={(e) => setFormData({ ...formData, total_budget: e.target.value })}
-                                        className="font-mono"
+                                        id="venue"
+                                        placeholder="e.g. The Whiskey Jar"
+                                        value={formData.venue}
+                                        onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
+                                        className="h-12"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="price_per_offer" className="text-slate-700 font-semibold">Offer per Bar ($)</Label>
-                                    <Input
-                                        id="price_per_offer"
-                                        type="number"
-                                        placeholder="500"
-                                        value={formData.price_per_offer}
-                                        onChange={(e) => setFormData({ ...formData, price_per_offer: e.target.value })}
-                                        className="font-mono font-bold text-emerald-600"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Dates Row */}
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <Label htmlFor="start_date" className="text-slate-700 font-semibold">Start Date</Label>
-                                    <Input
-                                        id="start_date"
-                                        type="date"
-                                        value={formData.start_date}
-                                        onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="end_date" className="text-slate-700 font-semibold">End Date</Label>
-                                    <Input
-                                        id="end_date"
-                                        type="date"
-                                        value={formData.end_date}
-                                        onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Deliverables Builder */}
-                            <div className="space-y-4 pt-4 border-t border-slate-100">
-                                <Label className="text-slate-900 font-bold block">Required Deliverables</Label>
-                                <div className="flex gap-2">
-                                    <Input
-                                        placeholder="Add a requirement (e.g. 'Post 3 Stories')"
-                                        value={newDeliverable}
-                                        onChange={(e) => setNewDeliverable(e.target.value)}
-                                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addDeliverable())}
-                                    />
-                                    <Button type="button" onClick={addDeliverable} variant="secondary" className="bg-slate-200 text-slate-900 hover:bg-slate-300">Add</Button>
-                                </div>
-                                <ul className="space-y-2">
-                                    {deliverables.map((item, index) => (
-                                        <li key={index} className="flex justify-between items-center bg-white px-3 py-2 rounded border border-slate-200 shadow-sm text-sm">
-                                            <span className="font-medium text-slate-700">{item}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeDeliverable(index)}
-                                                className="text-slate-400 hover:text-red-500"
-                                            >
-                                                &times;
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-
-                            {/* Bar Selection */}
-                            <div className="space-y-4 pt-4 border-t border-slate-100">
-                                <Label className="text-slate-900 font-bold block">Select Partner Bars</Label>
-                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 max-h-60 overflow-y-auto">
-                                    <div className="space-y-2">
-                                        {bars.map(bar => (
-                                            <div key={bar.id} className="flex items-center space-x-3 bg-white p-3 rounded border border-slate-100 shadow-sm hover:border-slate-300 transition-colors">
-                                                <Checkbox
-                                                    id={bar.id}
-                                                    checked={selectedBars.includes(bar.id)}
-                                                    onCheckedChange={(checked) => {
-                                                        if (checked) setSelectedBars([...selectedBars, bar.id])
-                                                        else setSelectedBars(selectedBars.filter(id => id !== bar.id))
-                                                    }}
-                                                />
-                                                <div className="grid gap-1.5 leading-none">
-                                                    <label htmlFor={bar.id} className="text-sm font-bold text-slate-900 cursor-pointer">{bar.name}</label>
-                                                    <p className="text-xs text-slate-500">{bar.location}</p>
-                                                </div>
-                                            </div>
-                                        ))}
+                                    <Label htmlFor="city" className="text-slate-700 font-semibold">Venue City</Label>
+                                    <div className="flex items-center gap-3">
+                                        <Input
+                                            id="city"
+                                            placeholder="City"
+                                            value={formData.city}
+                                            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                            className="h-12"
+                                        />
+                                        <span className="font-semibold text-slate-500 whitespace-nowrap">Virginia</span>
                                     </div>
                                 </div>
-                                <div className="flex justify-between items-center text-sm text-slate-600">
-                                    <span>Selected: {selectedBars.length} bars</span>
-                                    <span>Est. Cost: <span className="font-mono font-bold">${(parseFloat(formData.price_per_offer || '0') * selectedBars.length).toLocaleString()}</span></span>
-                                </div>
+                            </div>
+
+                            {/* Date */}
+                            <div className="space-y-2">
+                                <Label htmlFor="start_date" className="text-slate-700 font-semibold">Proposed Date</Label>
+                                <Input
+                                    id="start_date"
+                                    type="date"
+                                    value={formData.start_date}
+                                    onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                                    className="h-12"
+                                />
+                            </div>
+
+                            {/* Description */}
+                            <div className="space-y-2">
+                                <Label htmlFor="description" className="text-slate-700 font-semibold">Description</Label>
+                                <Textarea
+                                    id="description"
+                                    placeholder="Briefly describe what will happen — who will be there, what the brand is providing, how alcohol is involved."
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    rows={3}
+                                    className="resize-none text-base"
+                                />
                             </div>
 
                         </CardContent>
                         <div className="p-6 bg-slate-50 border-t border-slate-200 rounded-b-xl">
-                            <Button onClick={handleSubmit} disabled={loading} className="w-full h-12 text-lg bg-zinc-900 hover:bg-black text-white shadow-lg shadow-zinc-900/20">
-                                {loading ? (
-                                    <>
-                                        <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                                        Launching Campaign...
-                                    </>
-                                ) : 'Launch Campaign'}
+                            <Button
+                                disabled={!isFormValid || loading}
+                                onClick={handleComplianceCheck}
+                                className="w-full h-12 text-lg bg-[#0D9488] hover:bg-[#0D9488]/90 text-white shadow-lg shadow-teal-900/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {loading ? 'Checking...' : '⚡ Run Compliance Check'}
                             </Button>
                         </div>
                     </Card>

@@ -21,6 +21,8 @@ export default function BrandOnboarding() {
     const [formData, setFormData] = useState({
         name: '',
         category: '',
+        role: '',
+        state: '',
     })
 
     const router = useRouter()
@@ -83,7 +85,7 @@ export default function BrandOnboarding() {
         <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
             <Card className="w-full max-w-md">
                 <CardHeader>
-                    <CardTitle>Onboard Brand</CardTitle>
+                    <CardTitle>Set Up Your Brand</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -100,26 +102,63 @@ export default function BrandOnboarding() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="category">Category</Label>
+                            <Label htmlFor="category">Product Type</Label>
                             <Select
                                 onValueChange={(value) => setFormData({ ...formData, category: value })}
                                 value={formData.category}
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select a category" />
+                                    <SelectValue placeholder="Select type" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Beer">Beer</SelectItem>
                                     <SelectItem value="Spirits">Spirits</SelectItem>
-                                    <SelectItem value="RTD">RTD</SelectItem>
+                                    <SelectItem value="Beer">Beer</SelectItem>
                                     <SelectItem value="Wine">Wine</SelectItem>
-                                    <SelectItem value="Other">Other</SelectItem>
+                                    <SelectItem value="Ready-to-Drink / Seltzer">Ready-to-Drink / Seltzer</SelectItem>
+                                    <SelectItem value="Non-Alcoholic">Non-Alcoholic</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
 
-                        <Button type="submit" className="w-full" disabled={loading}>
-                            {loading ? 'Saving...' : 'Save Brand'}
+                        <div className="space-y-2">
+                            <Label htmlFor="role">Your Role</Label>
+                            <Select
+                                onValueChange={(value) => setFormData({ ...formData, role: value })}
+                                value={formData.role}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Brand Marketing Team">Brand Marketing Team</SelectItem>
+                                    <SelectItem value="Brand Ambassador">Brand Ambassador</SelectItem>
+                                    <SelectItem value="Field Marketing Agency">Field Marketing Agency</SelectItem>
+                                    <SelectItem value="Distributor Rep">Distributor Rep</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="state">Primary Activation State</Label>
+                            <Select
+                                onValueChange={(value) => setFormData({ ...formData, state: value })}
+                                value={formData.state}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select state" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Virginia">Virginia</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            className="w-full bg-[#0D9488] hover:bg-[#0D9488]/90 text-white"
+                            disabled={loading}
+                        >
+                            {loading ? 'Saving...' : 'Continue'}
                         </Button>
                     </form>
                 </CardContent>

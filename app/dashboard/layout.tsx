@@ -31,8 +31,8 @@ export default async function DashboardLayout({
             <aside className="w-64 bg-slate-900 flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out">
                 <div className="h-16 flex items-center px-6 border-b border-white/10">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-900/20 group-hover:bg-indigo-500 transition-colors">D</div>
-                        <span className="font-semibold text-lg tracking-tight text-white group-hover:text-slate-100 transition-colors">Deal OS</span>
+                        <div className="w-8 h-8 bg-[#0D9488] rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-teal-900/20 group-hover:bg-[#0D9488]/90 transition-colors">P</div>
+                        <span className="font-semibold text-lg tracking-tight text-white group-hover:text-slate-100 transition-colors">Proof</span>
                     </Link>
                 </div>
 
@@ -41,16 +41,28 @@ export default async function DashboardLayout({
 
                     {role === 'brand' && (
                         <>
-                            <Button variant="ghost" className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/5 active:bg-white/10 transition-all font-medium h-9" asChild>
+                            <Button variant="ghost" className="w-full justify-start text-white bg-white/10 hover:text-white hover:bg-white/10 transition-all font-medium h-9" asChild>
                                 <Link href="/dashboard/brand">
-                                    <LayoutDashboard className="w-4 h-4 mr-3 opacity-70" />
-                                    Brand Dashboard
+                                    <LayoutDashboard className="w-4 h-4 mr-3 opacity-100" />
+                                    Dashboard
                                 </Link>
                             </Button>
                             <Button variant="ghost" className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/5 active:bg-white/10 transition-all font-medium h-9" asChild>
-                                <Link href="/dashboard/brand/bars">
+                                <Link href="/dashboard/brand/campaigns">
+                                    <Megaphone className="w-4 h-4 mr-3 opacity-70" />
+                                    Activations
+                                </Link>
+                            </Button>
+                            <Button variant="ghost" className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/5 active:bg-white/10 transition-all font-medium h-9" asChild>
+                                <Link href="/dashboard/brand/packets">
                                     <FileText className="w-4 h-4 mr-3 opacity-70" />
-                                    Partner Network
+                                    Compliance Packets
+                                </Link>
+                            </Button>
+                            <Button variant="ghost" className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/5 active:bg-white/10 transition-all font-medium h-9" asChild>
+                                <Link href="/dashboard/brand/audit">
+                                    <HistoryIcon className="w-4 h-4 mr-3 opacity-70" />
+                                    Audit Log
                                 </Link>
                             </Button>
                         </>
