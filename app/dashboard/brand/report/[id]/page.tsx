@@ -59,7 +59,7 @@ export default function CampaignReport() {
     return (
         <div className="min-h-screen bg-slate-50 p-8 font-sans print:p-0 print:bg-white">
             <div className="max-w-4xl mx-auto mb-6 print:hidden">
-                <Button variant="ghost" onClick={() => router.back()} className="text-slate-500 hover:text-slate-900">
+                <Button variant="ghost" onClick={() => router.back()} className="text-slate-500 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200">
                     &larr; Back to Campaign
                 </Button>
             </div>

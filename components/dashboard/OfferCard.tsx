@@ -110,7 +110,7 @@ export function OfferCard({ offer }: OfferCardProps) {
 
                     {/* Title & Description */}
                     <div className="flex-1 space-y-2">
-                        <Link href={`/dashboard/bar/offer/${offer.id}`} className="block">
+                        <Link href={`/dashboard/agency/offer/${offer.id}`} className="block">
                             <h3 className="text-[15px] font-semibold text-slate-800 leading-snug group-hover:text-blue-600 transition-colors line-clamp-2">
                                 {offer.campaigns.title}
                             </h3>
@@ -125,7 +125,7 @@ export function OfferCard({ offer }: OfferCardProps) {
                     {/* 3. Footer (CTA) */}
                     <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-50/50">
                         <Link
-                            href={`/dashboard/bar/offer/${offer.id}`}
+                            href={`/dashboard/agency/offer/${offer.id}`}
                             className="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors flex items-center gap-1.5"
                         >
                             View Details <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />

@@ -250,7 +250,7 @@ export default function OfferDetails() {
                                                     type="number"
                                                     value={counterPrice}
                                                     onChange={e => setCounterPrice(e.target.value)}
-                                                    className="pl-7"
+                                                    className="pl-7 text-slate-900"
                                                     autoFocus
                                                 />
                                             </div>
@@ -261,7 +261,7 @@ export default function OfferDetails() {
                                                 value={counterNotes}
                                                 onChange={e => setCounterNotes(e.target.value)}
                                                 placeholder="e.g. Higher foot traffic expectation..."
-                                                className="min-h-[80px]"
+                                                className="min-h-[80px] text-slate-900"
                                             />
                                         </div>
                                         <div className="flex gap-2 pt-2">
@@ -318,7 +318,7 @@ export default function OfferDetails() {
                                                 >
                                                     Upload Proof
                                                 </Button>
-                                                <Button variant="outline" className="w-full">
+                                                <Button variant="outline" className="w-full bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border-slate-200">
                                                     <Download className="w-4 h-4 mr-2" /> Download Brief
                                                 </Button>
                                             </div>

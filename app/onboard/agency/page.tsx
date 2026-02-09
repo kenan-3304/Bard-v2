@@ -119,7 +119,7 @@ export default function AgencyOnboarding() {
             router.push('/dashboard/agency')
         } catch (error: any) {
             console.error(error)
-            alert('Error saving bar: ' + error.message)
+            alert('Error saving agency: ' + error.message)
         } finally {
             setLoading(false)
         }
@@ -134,7 +134,7 @@ export default function AgencyOnboarding() {
                     Setup your Agency
                 </h1>
                 <p className="text-lg text-gray-500">
-                    Welcome to Deal OS. Configure your agency profile.
+                    Welcome to Proof. Configure your agency profile.
                 </p>
             </div>
 
@@ -142,7 +142,7 @@ export default function AgencyOnboarding() {
                 <CardContent className="p-8 md:p-10 space-y-10">
                     <form onSubmit={handleSubmit} className="space-y-10">
 
-                        {/* Section 1: Bar Basics (Smart Lookup) */}
+                        {/* Section 1: Agency Basics */}
                         <section className="space-y-6">
 
                             <div className="space-y-6 max-w-xl mx-auto">
@@ -155,7 +155,7 @@ export default function AgencyOnboarding() {
                                         required
                                         value={formData.name}
                                         onChange={handleTextChange}
-                                        className="h-11 rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-600"
+                                        className="h-11 rounded-lg border-gray-300 focus:ring-2 focus:ring-[#0D9488]"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -167,7 +167,7 @@ export default function AgencyOnboarding() {
                                         required
                                         value={formData.location}
                                         onChange={handleTextChange}
-                                        className="h-11 rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-600"
+                                        className="h-11 rounded-lg border-gray-300 focus:ring-2 focus:ring-[#0D9488]"
                                     />
                                 </div>
                             </div>
@@ -181,8 +181,8 @@ export default function AgencyOnboarding() {
                             {/* Section 2: Scale & Reach */}
                             <section className="space-y-6">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="bg-orange-100 p-2 rounded-lg">
-                                        <Users className="w-5 h-5 text-orange-700" />
+                                    <div className="bg-[#0D9488]/10 p-2 rounded-lg">
+                                        <Users className="w-5 h-5 text-[#0D9488]" />
                                     </div>
                                     <h3 className="text-xl font-semibold text-gray-900">Scale & Reach</h3>
                                 </div>
@@ -198,7 +198,7 @@ export default function AgencyOnboarding() {
                                             required
                                             value={formData.capacity}
                                             onChange={handleTextChange}
-                                            className="h-11 rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-600"
+                                            className="h-11 rounded-lg border-gray-300 focus:ring-2 focus:ring-[#0D9488]"
                                         />
                                     </div>
                                 </div>
@@ -216,12 +216,12 @@ export default function AgencyOnboarding() {
                             <div className="pt-6 space-y-4">
                                 <Button
                                     type="submit"
-                                    className="w-full h-12 text-lg bg-gray-900 hover:bg-black text-white font-semibold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                                    className="w-full h-12 text-lg bg-[#0D9488] hover:bg-[#0D9488]/90 text-white font-semibold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
                                     disabled={loading}
                                 >
                                     {loading ? 'Saving...' : (
                                         <span className="flex items-center gap-2">
-                                            Enter Deal OS <ChevronRight className="w-5 h-5" />
+                                            Enter Proof <ChevronRight className="w-5 h-5" />
                                         </span>
                                     )}
                                 </Button>

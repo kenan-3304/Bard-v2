@@ -47,39 +47,24 @@ export default async function Home() {
 
   // State 3: Authenticated with Role
   if (profile?.role) {
-    if (profile.role === 'brand') {
-      return (
-        <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gray-50">
-          <Card className="w-full max-w-md text-center">
-            <CardHeader>
-              <CardTitle>Welcome back, {profile.role}!</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button asChild className="w-full mb-2">
-                <Link href="/dashboard/brand">Go to Brand Dashboard</Link>
-              </Button>
-              <SignOutButton className="w-full" />
-            </CardContent>
-          </Card>
-        </main>
-      )
-    } else {
-      return (
-        <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gray-50">
-          <Card className="w-full max-w-md text-center">
-            <CardHeader>
-              <CardTitle>Welcome back, {profile.role}!</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button asChild className="w-full mb-2">
-                <Link href="/dashboard/bar">Go to Bar Dashboard</Link>
-              </Button>
-              <SignOutButton className="w-full" />
-            </CardContent>
-          </Card>
-        </main>
-      )
-    }
+    const dashboardPath = profile.role === 'brand' ? '/dashboard/brand' : '/dashboard/agency'
+    const roleLabel = profile.role === 'brand' ? 'Brand' : 'Agency'
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-slate-50">
+        <Card className="w-full max-w-md text-center border-slate-200 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-slate-900">Welcome back</CardTitle>
+            <CardDescription className="text-slate-500">Signed in as {roleLabel}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button asChild className="w-full bg-[#0D9488] hover:bg-[#0D9488]/90 text-white">
+              <Link href={dashboardPath}>Go to Dashboard</Link>
+            </Button>
+            <SignOutButton className="w-full" variant="outline" />
+          </CardContent>
+        </Card>
+      </main>
+    )
   }
 
   // State 2: Authenticated without Role (Selection)
@@ -110,7 +95,7 @@ export default async function Home() {
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">Alcohol Brand</h2>
                   <p className="text-lg font-medium text-[#0D9488] mb-4">
-                    Plan bar activations, enforce ABC compliance, and generate audit-ready packets.
+                    Plan venue activations, enforce ABC compliance, and generate audit-ready packets.
                   </p>
                 </div>
                 <div className="pt-4 flex items-center text-sm font-semibold text-[#0D9488] group-hover:translate-x-1 transition-transform">

@@ -22,8 +22,8 @@ export async function acceptOffer(offerId: string) {
     }
 
     // Revalidate paths to refresh data
-    revalidatePath('/dashboard/bar')
-    revalidatePath('/dashboard/bar/campaigns')
+    revalidatePath('/dashboard/agency')
+    revalidatePath('/dashboard/agency/campaigns')
 
     return { success: true }
 }
