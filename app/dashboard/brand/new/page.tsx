@@ -11,12 +11,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, ShieldCheck, AlertTriangle, XCircle, CheckCircle2, Loader2, ArrowRight, Info } from 'lucide-react'
+import { addDays, format, isBefore, startOfToday } from 'date-fns'
 
 interface Venue {
     id: string
     name: string
     location: string
     city: string
+}
+
+interface Agency {
+    id: string
+    name: string
 }
 
 interface ComplianceResult {
@@ -36,31 +42,61 @@ export default function NewActivation() {
     const [loading, setLoading] = useState(false)
     const [saving, setSaving] = useState(false)
     const [venues, setVenues] = useState<Venue[]>([])
+    const [agencies, setAgencies] = useState<Agency[]>([])
     const [complianceResult, setComplianceResult] = useState<ComplianceResult | null>(null)
 
     const [formData, setFormData] = useState({
         title: '',
         activation_type: 'tasting',
         venue_id: '',
+        agency_id: '',
         city: '',
         proposed_date: '',
         description: '',
+        inventory_spend: '',
+        agency_fee: '',
     })
 
     useEffect(() => {
-        async function fetchVenues() {
-            const { data } = await supabase.from('venues').select('id, name, location, city')
-            if (data) setVenues(data)
+        async function fetchData() {
+            const { data: venuesData } = await supabase.from('venues').select('id, name, location, city')
+            if (venuesData) setVenues(venuesData)
+
+            const { data: agenciesData } = await supabase.from('agencies').select('id, name')
+            if (agenciesData) setAgencies(agenciesData)
         }
-        fetchVenues()
+        fetchData()
     }, [])
 
     const selectedVenue = venues.find(v => v.id === formData.venue_id)
+
+    // Smart Form Logic: Auto-fill City when Venue is selected
+    useEffect(() => {
+        if (selectedVenue) {
+            setFormData(prev => ({ ...prev, city: selectedVenue.city || 'Virginia' }))
+        }
+    }, [selectedVenue])
+
+    // Date Guardrails
+    const getMinDate = () => {
+        const today = startOfToday()
+        if (formData.activation_type === 'sponsored_event') {
+            return format(addDays(today, 30), 'yyyy-MM-dd') // 30 days for License
+        }
+        if (formData.activation_type === 'tasting') {
+            return format(addDays(today, 7), 'yyyy-MM-dd') // 7 days recommended
+        }
+        return format(today, 'yyyy-MM-dd')
+    }
 
     const handleComplianceCheck = async () => {
         if (!formData.title || !formData.activation_type) return
         setStep('checking')
         setLoading(true)
+
+        // Local Compliance Check for Tied-House Budget
+        const inventorySpend = parseFloat(formData.inventory_spend || '0')
+        const isHighSpend = inventorySpend > 100
 
         try {
             const res = await fetch('/api/compliance-check', {
@@ -73,10 +109,18 @@ export default function NewActivation() {
                     city: formData.city || selectedVenue?.city || 'Virginia',
                     proposed_date: formData.proposed_date,
                     description: formData.description,
+                    inventory_spend: inventorySpend, // Pass to API if needed
                 }),
             })
 
             const data = await res.json()
+
+            // Merge Local Budget Check
+            if (isHighSpend && data.compliance_status !== 'blocked') {
+                data.compliance_status = 'conditional'
+                data.reasoning.push(`High Inventory Spend ($${inventorySpend}) flags potential Tied-House inducement risk.`)
+            }
+
             setComplianceResult(data)
             setStep('results')
         } catch (error) {
@@ -93,6 +137,8 @@ export default function NewActivation() {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error('Not authenticated')
 
+            if (!formData.agency_id) throw new Error('You must select an Agency to execute this activation.')
+
             const { data: brand } = await supabase
                 .from('brands')
                 .select('id')
@@ -101,7 +147,8 @@ export default function NewActivation() {
 
             if (!brand) throw new Error('Brand not found')
 
-            const { data: campaign, error } = await supabase
+            // 1. Create Campaign (The Plan)
+            const { data: campaign, error: campaignError } = await supabase
                 .from('campaigns')
                 .insert({
                     brand_id: brand.id,
@@ -128,7 +175,22 @@ export default function NewActivation() {
                 .select()
                 .single()
 
-            if (error) throw error
+            if (campaignError) throw campaignError
+
+            // 2. Create Offer / Assignment (The Handshake)
+            // This ensures it shows up on the Agency Dashboard
+            const { error: offerError } = await supabase
+                .from('offers')
+                .insert({
+                    campaign_id: campaign.id,
+                    bar_id: formData.agency_id, // Legacy schema uses 'bar_id' for agency_id in offers table
+                    status: 'sent', // 'sent' = Pending Agency Review
+                    rate: parseFloat(formData.agency_fee || '0'),
+                    date: formData.proposed_date,
+                    // created_at is auto
+                })
+
+            if (offerError) throw offerError
 
             router.push(`/dashboard/brand/activation/${campaign.id}`)
             router.refresh()
@@ -170,19 +232,41 @@ export default function NewActivation() {
                                 />
                             </div>
 
-                            <div className="space-y-2">
-                                <Label className="text-slate-700 font-medium">Activation Type</Label>
-                                <Select value={formData.activation_type} onValueChange={(v) => setFormData({ ...formData, activation_type: v })}>
-                                    <SelectTrigger className="h-11 text-slate-900">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="tasting">Tasting</SelectItem>
-                                        <SelectItem value="sponsored_event">Sponsored Event</SelectItem>
-                                        <SelectItem value="ambassador_visit">Ambassador Visit</SelectItem>
-                                        <SelectItem value="brand_promotion">Brand Promotion</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-slate-700 font-medium">Activation Type</Label>
+                                    <Select value={formData.activation_type} onValueChange={(v) => setFormData({ ...formData, activation_type: v })}>
+                                        <SelectTrigger className="h-11 text-slate-900">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="tasting">Tasting</SelectItem>
+                                            <SelectItem value="sponsored_event">Sponsored Event</SelectItem>
+                                            <SelectItem value="ambassador_visit">Ambassador Visit</SelectItem>
+                                            <SelectItem value="brand_promotion">Brand Promotion</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-slate-700 font-medium text-emerald-700">Executing Agency</Label>
+                                    <Select value={formData.agency_id} onValueChange={(v) => setFormData({ ...formData, agency_id: v })}>
+                                        <SelectTrigger className="h-11 text-slate-900 border-emerald-200 bg-emerald-50/30">
+                                            <SelectValue placeholder="Select Agency..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {agencies.length === 0 ? (
+                                                <SelectItem value="none" disabled>No Agencies Found</SelectItem>
+                                            ) : (
+                                                agencies.map(agency => (
+                                                    <SelectItem key={agency.id} value={agency.id}>
+                                                        {agency.name}
+                                                    </SelectItem>
+                                                ))
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                    {agencies.length === 0 && <p className="text-xs text-red-500">No agencies available. Please create one in database.</p>}
+                                </div>
                             </div>
 
                             <div className="space-y-2">
@@ -197,6 +281,7 @@ export default function NewActivation() {
                                                 {venue.name} - {venue.location || venue.city || 'Virginia'}
                                             </SelectItem>
                                         ))}
+                                        <SelectItem value="tbd">Venue TBD</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -208,17 +293,49 @@ export default function NewActivation() {
                                         placeholder="e.g. Richmond"
                                         value={formData.city}
                                         onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                        className="h-11 text-slate-900"
+                                        className="h-11 text-slate-900 disabled:bg-slate-50"
+                                        disabled={!!selectedVenue} // Disable if venue selected
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-slate-700 font-medium">Proposed Date</Label>
                                     <Input
                                         type="date"
+                                        min={getMinDate()}
                                         value={formData.proposed_date}
                                         onChange={(e) => setFormData({ ...formData, proposed_date: e.target.value })}
                                         className="h-11 text-slate-900"
                                     />
+                                    <p className="text-xs text-slate-400">
+                                        {formData.activation_type === 'sponsored_event' && 'Requires 30 days notice for Special Event License.'}
+                                        {formData.activation_type === 'tasting' && 'Recommended 7 days notice.'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Budget Section */}
+                            <div className="grid grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg border border-slate-100">
+                                <div className="space-y-2">
+                                    <Label className="text-slate-700 font-medium">Inventory Spend ($)</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="0.00"
+                                        value={formData.inventory_spend}
+                                        onChange={(e) => setFormData({ ...formData, inventory_spend: e.target.value })}
+                                        className="h-11 text-slate-900 bg-white"
+                                    />
+                                    <p className="text-[10px] text-slate-500">Product purchased from venue.</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-slate-700 font-medium">Agency Fee ($)</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="0.00"
+                                        value={formData.agency_fee}
+                                        onChange={(e) => setFormData({ ...formData, agency_fee: e.target.value })}
+                                        className="h-11 text-slate-900 bg-white"
+                                    />
+                                    <p className="text-[10px] text-slate-500">Execution cost.</p>
                                 </div>
                             </div>
 
@@ -237,8 +354,8 @@ export default function NewActivation() {
                         <div className="p-6 bg-slate-50 border-t border-slate-100 rounded-b-xl">
                             <Button
                                 onClick={handleComplianceCheck}
-                                disabled={!formData.title || !formData.activation_type}
-                                className="w-full h-12 bg-[#0D9488] hover:bg-[#0D9488]/90 text-white text-base font-semibold shadow-lg shadow-[#0D9488]/20"
+                                disabled={!formData.title || !formData.activation_type || !formData.agency_id}
+                                className="w-full h-12 bg-[#0D9488] hover:bg-[#0D9488]/90 text-white text-base font-semibold shadow-lg shadow-[#0D9488]/20 disabled:opacity-50"
                             >
                                 <ShieldCheck className="w-5 h-5 mr-2" />
                                 Run Compliance Check
@@ -357,9 +474,10 @@ export default function NewActivation() {
                 {complianceResult && complianceResult.required_permits.length > 0 && (
                     <Card className="bg-white border-slate-200 shadow-sm rounded-xl">
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-base font-semibold text-slate-900">Required Permits</CardTitle>
+                            <CardTitle className="text-base font-semibold text-slate-900">Agency Requirements</CardTitle>
                         </CardHeader>
                         <CardContent>
+                            <p className="text-xs text-slate-500 mb-3">Your assigned Agency will need to handle the following:</p>
                             <ul className="space-y-2">
                                 {complianceResult.required_permits.map((item, i) => (
                                     <li key={i} className="flex items-center gap-2 text-sm text-slate-700">
@@ -448,11 +566,11 @@ export default function NewActivation() {
                         {saving ? (
                             <>
                                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Saving...
+                                Processing...
                             </>
                         ) : (
                             <>
-                                Save & Continue
+                                Assign to Agency & Activate
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </>
                         )}
