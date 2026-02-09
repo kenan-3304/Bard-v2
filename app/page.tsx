@@ -49,16 +49,16 @@ export default async function Home() {
   if (profile?.role) {
     if (profile.role === 'brand') {
       return (
-        <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gray-50">
-          <Card className="w-full max-w-md text-center">
+        <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-[#0F172A] to-[#1E293B]">
+          <Card className="w-full max-w-md text-center bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl">
             <CardHeader>
-              <CardTitle>Welcome back, {profile.role}!</CardTitle>
+              <CardTitle className="text-3xl font-bold text-white">Welcome back, Alcohol Brand</CardTitle>
             </CardHeader>
-            <CardContent>
-              <Button asChild className="w-full mb-2">
-                <Link href="/dashboard/brand">Go to Brand Dashboard</Link>
+            <CardContent className="space-y-4">
+              <Button asChild className="w-full h-12 text-lg font-semibold bg-[#0D9488] hover:bg-[#0D9488]/90 text-white shadow-lg shadow-teal-900/20">
+                <Link href="/dashboard/brand">Go to Dashboard</Link>
               </Button>
-              <SignOutButton className="w-full" />
+              <SignOutButton className="w-full h-12 text-lg text-white border-white/20 bg-transparent hover:bg-white/10 hover:text-white" variant="outline" />
             </CardContent>
           </Card>
         </main>
